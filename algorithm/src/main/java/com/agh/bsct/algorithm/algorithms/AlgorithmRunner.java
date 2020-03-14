@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import static com.agh.bsct.algorithm.algorithms.AAlgorithm.ANT_QUALIFIER;
 import static com.agh.bsct.algorithm.algorithms.BFAlgorithm.BRUTE_FORCE_QUALIFIER;
 import static com.agh.bsct.algorithm.algorithms.SAAlgorithm.SIMULATED_ANNEALING_QUALIFIER;
 
@@ -12,15 +13,19 @@ import static com.agh.bsct.algorithm.algorithms.SAAlgorithm.SIMULATED_ANNEALING_
 public class AlgorithmRunner {
 
     private static final String SA_ALGORITHM_SYMBOL = "sa";
+    private static final String A_ALGORITHM_SYMBOL = "a";
     private static final String BF_ALGORITHM_SYMBOL = "bf";
 
     private final IAlgorithm saAlgorithm;
+    private final IAlgorithm aAlgorithm;
     private final IAlgorithm bfAlgorithm;
 
     @Autowired
     public AlgorithmRunner(@Qualifier(SIMULATED_ANNEALING_QUALIFIER) IAlgorithm saAlgorithm,
+                           @Qualifier(ANT_QUALIFIER) IAlgorithm aAlgorithm,
                            @Qualifier(BRUTE_FORCE_QUALIFIER) IAlgorithm bfAlgorithm) {
         this.saAlgorithm = saAlgorithm;
+        this.aAlgorithm = aAlgorithm;
         this.bfAlgorithm = bfAlgorithm;
     }
 
@@ -28,6 +33,8 @@ public class AlgorithmRunner {
         String algorithmType = algorithmTask.getAlgorithmType();
         if (SA_ALGORITHM_SYMBOL.equals(algorithmType)) {
             saAlgorithm.run(algorithmTask);
+        } else if (A_ALGORITHM_SYMBOL.equals(algorithmType)) {
+            aAlgorithm.run(algorithmTask);
         } else if (BF_ALGORITHM_SYMBOL.equals(algorithmType)) {
             bfAlgorithm.run(algorithmTask);
         } else {

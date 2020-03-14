@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-@Qualifier(AntAlgorithm.ANT_QUALIFIER)
-public class AntAlgorithm implements IAlgorithm {
+@Qualifier(AAlgorithm.ANT_QUALIFIER)
+public class AAlgorithm implements IAlgorithm {
 
     static final String ANT_QUALIFIER = "antAlgorithm";
 
