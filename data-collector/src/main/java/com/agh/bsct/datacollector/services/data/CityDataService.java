@@ -60,7 +60,7 @@ public class CityDataService {
         streets.stream()
                 .map(StreetDTO::getNodesIds)
                 .flatMap(Collection::stream)
-                .forEach(nodeId -> nodeIdsToOccurrencesInStreets.merge(nodeId, 1, (a, b) -> a + b));
+                .forEach(nodeId -> nodeIdsToOccurrencesInStreets.merge(nodeId, 1, Integer::sum));
 
         return nodeIdsToOccurrencesInStreets;
     }
