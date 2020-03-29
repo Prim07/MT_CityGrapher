@@ -22,4 +22,14 @@ public class DatabaseService {
         cityDataEntity.setCityDataDTO(cityDataDTO);
         cityDataRepository.save(cityDataEntity);
     }
+
+    public boolean doesDataExist(String cityName) {
+        return cityDataRepository.existsByCityName(cityName);
+    }
+
+    public CityDataDTO getCityData(String cityName) {
+        return cityDataRepository.findTopByCityName(cityName)
+                .orElseThrow(() -> new IllegalStateException("City " + cityName + " does not exist in database."))
+                .getCityDataDTO();
+    }
 }
