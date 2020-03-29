@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
-public class StreetDTO {
+public class StreetDTO implements Serializable {
 
     @JsonIgnore
     private static final String NAME_TAG = "name";

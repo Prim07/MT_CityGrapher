@@ -5,13 +5,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class CityDataDTO {
+public class CityDataDTO implements Serializable {
 
     @NotNull
     private List<GeographicalNodeDTO> geographicalNodes;

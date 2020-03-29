@@ -5,6 +5,7 @@ import com.agh.bsct.api.entities.citydata.GeographicalNodeDTO;
 import com.agh.bsct.api.entities.citydata.StreetDTO;
 import com.agh.bsct.datacollector.library.adapter.queryresult.OverpassQueryResult;
 import com.agh.bsct.datacollector.services.city.QueryForCityProvider;
+import com.agh.bsct.datacollector.services.database.DatabaseService;
 import com.agh.bsct.datacollector.services.interpreter.QueryInterpreterService;
 import com.agh.bsct.datacollector.services.result.filter.ResultFilterService;
 import com.agh.bsct.datacollector.services.result.joiner.StreetsJoinerService;
@@ -23,27 +24,39 @@ public class CityDataService {
     private QueryInterpreterService queryInterpreterService;
     private ResultFilterService resultFilterService;
     private StreetsJoinerService streetsJoinerService;
+    private DatabaseService databaseService;
 
     @Autowired
     public CityDataService(QueryForCityProvider queryForCityProvider,
                            QueryInterpreterService queryInterpreterService,
                            ResultFilterService resultFilterService,
-                           StreetsJoinerService streetsJoinerService) {
+                           StreetsJoinerService streetsJoinerService,
+                           DatabaseService databaseService) {
         this.queryForCityProvider = queryForCityProvider;
         this.queryInterpreterService = queryInterpreterService;
         this.resultFilterService = resultFilterService;
         this.streetsJoinerService = streetsJoinerService;
+        this.databaseService = databaseService;
     }
 
     public CityDataDTO getCityDataDTO(String cityName) {
-        String query = queryForCityProvider.getQueryForCity(cityName);
+        if (databaseService.doesDataExist(cityName)) {
+            return databaseService.getCityData(cityName);
+        }
 
+        return createCityData(cityName);
+    }
+
+    private CityDataDTO createCityData(String cityName) {
+        String query = queryForCityProvider.getQueryForCity(cityName);
         OverpassQueryResult interpretedQuery = queryInterpreterService.interpret(query);
         OverpassQueryResult removedAreaTagsQueryResult = resultFilterService.removeAreaTags(interpretedQuery);
-
         Set<StreetDTO> streets = streetsJoinerService.joinStreets(removedAreaTagsQueryResult);
+        CityDataDTO cityDataDTO = updateCrossings(streets, removedAreaTagsQueryResult);
 
-        return updateCrossings(streets, removedAreaTagsQueryResult);
+        databaseService.save(cityDataDTO, cityName);
+
+        return cityDataDTO;
     }
 
     private CityDataDTO updateCrossings(Set<StreetDTO> streets, OverpassQueryResult overpassQueryResult) {
