@@ -12,6 +12,6 @@
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.hbm2ddl.auto">update</property>
 
-        <mapping class="com.agh.bsct.datacollector.services.database.entities.CityData"/>
+        <mapping class="com.agh.bsct.datacollector.services.database.entities.CityDataEntity"/>
     </session-factory>
 </hibernate-configuration>
