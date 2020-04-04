@@ -13,7 +13,8 @@ import static com.agh.bsct.datacollector.controllers.config.PathsConstants.ALGOR
 @Service
 public class AlgorithmService {
 
-    private static final String ALGORITHM_PATH = ALGORITHM_ROOT_PATH + "/algorithm/";
+    private static final String ALGORITHM_PATH = ALGORITHM_ROOT_PATH + "algorithm/";
+    private static final String ALGORITHM_TEMP_RESULT_PATH = ALGORITHM_PATH + "temp/";
 
     private final RestTemplate restTemplate;
 
@@ -30,6 +31,14 @@ public class AlgorithmService {
 
     public AlgorithmResultDTO getResult(String taskId) {
         var uri = new DefaultUriBuilderFactory(ALGORITHM_PATH).builder()
+                .path(taskId)
+                .build()
+                .toString();
+        return restTemplate.getForObject(uri, AlgorithmResultDTO.class);
+    }
+
+    public AlgorithmResultDTO getTempResult(String taskId) {
+        var uri = new DefaultUriBuilderFactory(ALGORITHM_TEMP_RESULT_PATH).builder()
                 .path(taskId)
                 .build()
                 .toString();

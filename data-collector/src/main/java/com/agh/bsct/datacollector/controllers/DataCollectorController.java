@@ -1,7 +1,10 @@
 package com.agh.bsct.datacollector.controllers;
 
 
+import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultDTO;
 import com.agh.bsct.api.entities.taskinput.TaskInputDTO;
+import com.agh.bsct.datacollector.controllers.config.PathsConstants;
+import com.agh.bsct.datacollector.services.algorithm.boundary.AlgorithmService;
 import com.agh.bsct.datacollector.services.city.OSMCityService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,22 +17,28 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class DataCollectorController {
 
-    private static final String DATA_COLLECTOR_PATH = "/dataCollector";
+    private static final String DATA_COLLECTOR_PATH = "dataCollector";
     private static final String CREATE_TASK_PATH = "/createTask";
     private static final String GET_ALGORITHM_RESULT_PATH = "/algorithmResult/";
+    private static final String GET_TEMP_ALGORITHM_RESULT_PATH = "/tempAlgorithmResult/";
     private static final String TASK_ID_URI_PARAM = "{taskId}";
 
     private final OSMCityService osmCityService;
+    private final AlgorithmService algorithmService;
 
     @Autowired
-    public DataCollectorController(OSMCityService osmCityService) {
+    public DataCollectorController(OSMCityService osmCityService, AlgorithmService algorithmService) {
         this.osmCityService = osmCityService;
+        this.algorithmService = algorithmService;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = DATA_COLLECTOR_PATH + CREATE_TASK_PATH)
     @ResponseBody
     public ResponseEntity<ObjectNode> getCityGraph(@RequestBody TaskInputDTO taskInputDTO) {
         ObjectNode cityGraph = osmCityService.getCityGraph(taskInputDTO);
+        cityGraph.put("uri", PathsConstants.DATA_COLLECTOR_ROOT_PATH + DATA_COLLECTOR_PATH
+                + GET_TEMP_ALGORITHM_RESULT_PATH + cityGraph.get("taskId").asText());
+
         return ResponseEntity.status(HttpStatus.OK).body(cityGraph);
     }
 
@@ -39,4 +48,10 @@ public class DataCollectorController {
         return osmCityService.getMappedAlgorithmResult(taskId);
     }
 
+    @GetMapping(DATA_COLLECTOR_PATH + GET_TEMP_ALGORITHM_RESULT_PATH + TASK_ID_URI_PARAM)
+    @ResponseBody
+    public ResponseEntity<AlgorithmResultDTO> getTempAlgorithmResult(@PathVariable String taskId) {
+        AlgorithmResultDTO tempAlgorithmResultDTO = algorithmService.getTempResult(taskId);
+        return ResponseEntity.status(HttpStatus.OK).body(tempAlgorithmResultDTO);
+    }
 }

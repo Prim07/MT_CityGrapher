@@ -109,8 +109,8 @@ public class GraphService {
 
     }
 
-    Map<Long, Map<Long, Double>> calculateShortestPathsDistances(Graph graph) {
-        var nodeToEdgesIncidenceMap = graph.getIncidenceMap();
+    Map<Long, Map<Long, Double>> calculateShortestPathsDistances(AlgorithmTask algorithmTask) {
+        var nodeToEdgesIncidenceMap = algorithmTask.getGraph().getIncidenceMap();
 
         var graphNodes = new ArrayList<>(nodeToEdgesIncidenceMap.keySet());
         var shortestPathsDistances = new HashMap<Long, Map<Long, Double>>();
@@ -129,7 +129,14 @@ public class GraphService {
                 }
             }
         }
+
+        int kLoopIteration = 0;
+        int graphNodesSize = graphNodes.size();
+
         for (var k : graphNodes) {
+            kLoopIteration++;
+            algorithmTask.setCalculatingShortestPathsProgress(getPercentageValue(kLoopIteration, graphNodesSize));
+
             for (var i : graphNodes) {
                 for (var j : graphNodes) {
 
@@ -153,9 +160,13 @@ public class GraphService {
         return shortestPathsDistances;
     }
 
+    private int getPercentageValue(int kLoopIteration, double graphNodesSize) {
+        return (int) (kLoopIteration / graphNodesSize * 100);
+    }
+
     public Map<Long, Map<Long, Double>> getShortestPathsDistances(AlgorithmTask algorithmTask) {
         replaceGraphWithItsLargestConnectedComponent(algorithmTask);
-        return calculateShortestPathsDistances(algorithmTask.getGraph());
+        return calculateShortestPathsDistances(algorithmTask);
     }
 
     private void putValueToMap(GraphNode i,

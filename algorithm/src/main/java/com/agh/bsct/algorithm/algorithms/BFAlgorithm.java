@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Qualifier(BFAlgorithm.BRUTE_FORCE_QUALIFIER)
@@ -40,14 +37,22 @@ public class BFAlgorithm implements IAlgorithm {
     public void run(AlgorithmTask algorithmTask) {
         algorithmTask.setStatus(AlgorithmCalculationStatus.CALCULATING);
 
+        printMessage("Starting calculating shortest paths distances");
         final var shortestPathsDistances = graphService.getShortestPathsDistances(algorithmTask);
 
+        printMessage("Starting calculating");
         var bestState = getBestState(algorithmTask, shortestPathsDistances);
 
         var hospitals = crossingsService.getGeographicalNodesForBestState(bestState, algorithmTask.getGraphDataDTO());
         algorithmTask.setHospitals(hospitals);
 
+        printMessage("Set status to SUCCESS");
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
+    }
+
+    private void printMessage(String message) {
+        Calendar now = Calendar.getInstance();
+        System.out.println(now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE) + ":" + now.get(Calendar.SECOND) + ":" + now.get(Calendar.MILLISECOND) + " - " + message);
     }
 
     private List<GraphNode> getBestState(AlgorithmTask algorithmTask,

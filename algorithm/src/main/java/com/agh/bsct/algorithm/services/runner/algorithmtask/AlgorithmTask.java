@@ -15,6 +15,7 @@ public class AlgorithmTask {
     private final Integer numberOfResults;
     private final String algorithmType;
     private Graph graph;
+    private Integer calculatingShortestPathsProgress;
     private AlgorithmCalculationStatus status;
     private List<GeographicalNodeDTO> hospitals;
 
@@ -24,6 +25,7 @@ public class AlgorithmTask {
         this.numberOfResults = algorithmOrderDTO.getNumberOfResults();
         this.algorithmType = algorithmOrderDTO.getAlgorithmType();
         this.graph = graph;
+        this.calculatingShortestPathsProgress = 0;
         this.status = AlgorithmCalculationStatus.NOT_STARTED;
     }
 
@@ -53,6 +55,14 @@ public class AlgorithmTask {
 
     public void setStatus(AlgorithmCalculationStatus status) {
         this.status = status;
+    }
+
+    public Integer getCalculatingShortestPathsProgress() {
+        return calculatingShortestPathsProgress;
+    }
+
+    public void setCalculatingShortestPathsProgress(Integer progress) {
+        this.calculatingShortestPathsProgress = progress;
     }
 
     public Optional<List<GeographicalNodeDTO>> getHospitals() {

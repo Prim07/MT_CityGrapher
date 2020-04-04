@@ -1,6 +1,5 @@
 package com.agh.bsct.algorithm.controllers;
 
-import com.agh.bsct.algorithm.controllers.config.PathsConstants;
 import com.agh.bsct.algorithm.controllers.mapper.AlgorithmTaskMapper;
 import com.agh.bsct.algorithm.services.runner.AlgorithmRunnerService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmCalculationStatus;
@@ -23,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class AlgorithmController {
 
     private static final String ALGORITHM_PATH = "algorithm/";
+    private static final String ALGORITHM_TEMP_RESULT_PATH = ALGORITHM_PATH + "temp/";
     private static final String TASK_ID_URI_PARAM = "{taskId}";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -43,6 +43,20 @@ public class AlgorithmController {
             return (task.getStatus() == AlgorithmCalculationStatus.SUCCESS)
                     ? getSuccessfulResponseWithAlgorithmTask(task)
                     : getAcceptedResponseWithAlgorithmTask(task);
+        } catch (CacheLoader.InvalidCacheLoadException e) {
+            e.printStackTrace();
+            return getNotFoundResponse(e, taskId);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            return getFailureResponseWithAlgorithmResultDTO(e, taskId);
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = ALGORITHM_TEMP_RESULT_PATH + TASK_ID_URI_PARAM)
+    public ResponseEntity<AlgorithmResultDTO> getTempResults(@PathVariable String taskId) {
+        try {
+            AlgorithmTask task = algorithmRunnerService.get(taskId);
+            return getSuccessfulResponseWithAlgorithmTask(task);
         } catch (CacheLoader.InvalidCacheLoadException e) {
             e.printStackTrace();
             return getNotFoundResponse(e, taskId);
@@ -81,8 +95,7 @@ public class AlgorithmController {
     }
 
     private ResponseEntity<ObjectNode> getSuccessfulResponseWithUriToTask(String taskId) {
-        ObjectNode json = objectMapper.createObjectNode()
-                .put("uri", PathsConstants.ROOT_PATH + ALGORITHM_PATH + taskId);
+        ObjectNode json = objectMapper.createObjectNode().put("taskId", taskId);
         return ResponseEntity.status(HttpStatus.OK).body(json);
     }
 
