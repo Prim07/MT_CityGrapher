@@ -1,6 +1,7 @@
 package com.agh.bsct.datacollector.services.city;
 
 import com.agh.bsct.api.entities.algorithmorder.AlgorithmOrderDTO;
+import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
 import com.agh.bsct.api.entities.taskinput.TaskInputDTO;
 import com.agh.bsct.datacollector.services.algorithm.boundary.AlgorithmService;
 import com.agh.bsct.datacollector.services.data.CityDataService;
@@ -36,14 +37,15 @@ public class OSMCityService {
         var graphDataDTO = graphService.getGraphDataDTO(cityDataDTO);
         var algorithmType = taskInputDTO.getAlgorithmType();
         var numberOfResults = taskInputDTO.getNumberOfResults();
-        AlgorithmOrderDTO algorithmOrderDTO = algorithmType
+
+        var algorithmOrderDTO = algorithmType
                 .map(typeValue -> new AlgorithmOrderDTO(numberOfResults, graphDataDTO, typeValue))
                 .orElseGet(() -> new AlgorithmOrderDTO(numberOfResults, graphDataDTO, SA_ALGORITHM_SYMBOL));
+
         return algorithmService.run(algorithmOrderDTO);
     }
 
-    public ObjectNode getMappedAlgorithmResult(String taskId) {
-        var result = algorithmService.getResult(taskId);
-        return dataParser.parseToJson(result.getGraphData(), result.getHospitals());
+    public AlgorithmResultWithVisualizationDataDTO getMappedAlgorithmResult(String taskId) {
+        return dataParser.parseToVisualizationDataDTO(algorithmService.getResult(taskId));
     }
 }

@@ -2,7 +2,6 @@ package com.agh.bsct.algorithm.algorithms;
 
 import com.agh.bsct.algorithm.services.algorithms.AlgorithmFunctionsService;
 import com.agh.bsct.algorithm.services.algorithms.CrossingsService;
-import com.agh.bsct.algorithm.services.graph.GraphEdge;
 import com.agh.bsct.algorithm.services.graph.GraphNode;
 import com.agh.bsct.algorithm.services.graph.GraphService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmCalculationStatus;
@@ -11,7 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static com.agh.bsct.algorithm.algorithms.dummylogger.DummyLogger.printMessage;
 
 @Component
 @Qualifier(BFAlgorithm.BRUTE_FORCE_QUALIFIER)
@@ -35,47 +39,42 @@ public class BFAlgorithm implements IAlgorithm {
 
     @Override
     public void run(AlgorithmTask algorithmTask) {
-        algorithmTask.setStatus(AlgorithmCalculationStatus.CALCULATING);
-
+        algorithmTask.setStatus(AlgorithmCalculationStatus.CALCULATING_SHORTEST_PATHS);
         printMessage("Starting calculating shortest paths distances");
         final var shortestPathsDistances = graphService.getShortestPathsDistances(algorithmTask);
 
+        algorithmTask.setStatus(AlgorithmCalculationStatus.CALCULATING);
         printMessage("Starting calculating");
         var bestState = getBestState(algorithmTask, shortestPathsDistances);
 
-        var hospitals = crossingsService.getGeographicalNodesForBestState(bestState, algorithmTask.getGraphDataDTO());
-        algorithmTask.setHospitals(hospitals);
-
+        updateHospitalsInAlgorithmTask(algorithmTask, bestState);
         printMessage("Set status to SUCCESS");
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
-    }
-
-    private void printMessage(String message) {
-        Calendar now = Calendar.getInstance();
-        System.out.println(now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE) + ":" + now.get(Calendar.SECOND) + ":" + now.get(Calendar.MILLISECOND) + " - " + message);
     }
 
     private List<GraphNode> getBestState(AlgorithmTask algorithmTask,
                                          Map<Long, Map<Long, Double>> shortestPathsDistances) {
         Integer numberOfResults = algorithmTask.getNumberOfResults();
-        Map<GraphNode, List<GraphEdge>> incidenceMap = algorithmTask.getGraph().getIncidenceMap();
+
         if (numberOfResults.equals(1)) {
-            return getBestStateForOneHospital(incidenceMap, shortestPathsDistances);
+            return getBestStateForOneHospital(algorithmTask, shortestPathsDistances);
         }
         if (numberOfResults.equals(2)) {
-            return getBestStateForTwoHospitals(incidenceMap, shortestPathsDistances);
+            return getBestStateForTwoHospitals(algorithmTask, shortestPathsDistances);
         }
         if (numberOfResults.equals(3)) {
-            return getBestStateForThreeHospitals(incidenceMap, shortestPathsDistances);
+            return getBestStateForThreeHospitals(algorithmTask, shortestPathsDistances);
         }
+
         throw new IllegalStateException("Brute Force Algorithm cannot be applied to " + numberOfResults
                 + " requested results. Please choose 1, 2 or 3.");
     }
 
-    private List<GraphNode> getBestStateForOneHospital(Map<GraphNode, List<GraphEdge>> incidenceMap,
+    private List<GraphNode> getBestStateForOneHospital(AlgorithmTask algorithmTask,
                                                        Map<Long, Map<Long, Double>> shortestPathsDistances) {
         List<GraphNode> bestState = Collections.emptyList();
         double bestFunctionValue = Double.MAX_VALUE;
+        var incidenceMap = algorithmTask.getGraph().getIncidenceMap();
 
         for (var node : incidenceMap.keySet()) {
             List<GraphNode> acceptedState = Collections.singletonList(node);
@@ -84,16 +83,18 @@ public class BFAlgorithm implements IAlgorithm {
             if (acceptedFunctionValue < bestFunctionValue) {
                 bestFunctionValue = acceptedFunctionValue;
                 bestState = acceptedState;
+                updateHospitalsInAlgorithmTask(algorithmTask, bestState);
             }
         }
 
         return bestState;
     }
 
-    private List<GraphNode> getBestStateForTwoHospitals(Map<GraphNode, List<GraphEdge>> incidenceMap,
+    private List<GraphNode> getBestStateForTwoHospitals(AlgorithmTask algorithmTask,
                                                         Map<Long, Map<Long, Double>> shortestPathsDistances) {
         List<GraphNode> bestState = Collections.emptyList();
         double bestFunctionValue = Double.MAX_VALUE;
+        var incidenceMap = algorithmTask.getGraph().getIncidenceMap();
 
         for (var node1 : incidenceMap.keySet()) {
             for (var node2 : incidenceMap.keySet()) {
@@ -103,6 +104,7 @@ public class BFAlgorithm implements IAlgorithm {
                 if (acceptedFunctionValue < bestFunctionValue) {
                     bestFunctionValue = acceptedFunctionValue;
                     bestState = acceptedState;
+                    updateHospitalsInAlgorithmTask(algorithmTask, bestState);
                 }
             }
 
@@ -111,11 +113,11 @@ public class BFAlgorithm implements IAlgorithm {
         return bestState;
     }
 
-    private List<GraphNode> getBestStateForThreeHospitals(Map<GraphNode, List<GraphEdge>> incidenceMap,
+    private List<GraphNode> getBestStateForThreeHospitals(AlgorithmTask algorithmTask,
                                                           Map<Long, Map<Long, Double>> shortestPathsDistances) {
         List<GraphNode> bestState = Collections.emptyList();
         double bestFunctionValue = Double.MAX_VALUE;
-
+        var incidenceMap = algorithmTask.getGraph().getIncidenceMap();
 
         for (var node1 : incidenceMap.keySet()) {
             for (var node2 : incidenceMap.keySet()) {
@@ -126,6 +128,7 @@ public class BFAlgorithm implements IAlgorithm {
                     if (acceptedFunctionValue < bestFunctionValue) {
                         bestFunctionValue = acceptedFunctionValue;
                         bestState = acceptedState;
+                        updateHospitalsInAlgorithmTask(algorithmTask, bestState);
                     }
                 }
 
@@ -133,6 +136,12 @@ public class BFAlgorithm implements IAlgorithm {
         }
 
         return bestState;
+    }
+
+    private void updateHospitalsInAlgorithmTask(AlgorithmTask algorithmTask, List<GraphNode> bestState) {
+        var hospitals = crossingsService.getGeographicalNodesForBestState(
+                bestState, algorithmTask.getGraphDataDTO());
+        algorithmTask.setHospitals(hospitals);
     }
 
 }

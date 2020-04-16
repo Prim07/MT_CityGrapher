@@ -1,10 +1,9 @@
 package com.agh.bsct.datacollector.controllers;
 
 
-import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultDTO;
+import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
 import com.agh.bsct.api.entities.taskinput.TaskInputDTO;
 import com.agh.bsct.datacollector.controllers.config.PathsConstants;
-import com.agh.bsct.datacollector.services.algorithm.boundary.AlgorithmService;
 import com.agh.bsct.datacollector.services.city.OSMCityService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +23,10 @@ public class DataCollectorController {
     private static final String TASK_ID_URI_PARAM = "{taskId}";
 
     private final OSMCityService osmCityService;
-    private final AlgorithmService algorithmService;
 
     @Autowired
-    public DataCollectorController(OSMCityService osmCityService, AlgorithmService algorithmService) {
+    public DataCollectorController(OSMCityService osmCityService) {
         this.osmCityService = osmCityService;
-        this.algorithmService = algorithmService;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = DATA_COLLECTOR_PATH + CREATE_TASK_PATH)
@@ -44,14 +41,13 @@ public class DataCollectorController {
 
     @GetMapping(DATA_COLLECTOR_PATH + GET_ALGORITHM_RESULT_PATH + TASK_ID_URI_PARAM)
     @ResponseBody
-    public ObjectNode getMappedAlgorithmResult(@PathVariable String taskId) {
+    public AlgorithmResultWithVisualizationDataDTO getMappedAlgorithmResult(@PathVariable String taskId) {
         return osmCityService.getMappedAlgorithmResult(taskId);
     }
 
     @GetMapping(DATA_COLLECTOR_PATH + GET_TEMP_ALGORITHM_RESULT_PATH + TASK_ID_URI_PARAM)
     @ResponseBody
-    public ResponseEntity<AlgorithmResultDTO> getTempAlgorithmResult(@PathVariable String taskId) {
-        AlgorithmResultDTO tempAlgorithmResultDTO = algorithmService.getTempResult(taskId);
-        return ResponseEntity.status(HttpStatus.OK).body(tempAlgorithmResultDTO);
+    public AlgorithmResultWithVisualizationDataDTO getTempAlgorithmResult(@PathVariable String taskId) {
+        return getMappedAlgorithmResult(taskId);
     }
 }

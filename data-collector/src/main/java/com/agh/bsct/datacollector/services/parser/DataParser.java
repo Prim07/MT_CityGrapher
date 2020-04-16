@@ -1,11 +1,13 @@
 package com.agh.bsct.datacollector.services.parser;
 
+import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultDTO;
+import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
+import com.agh.bsct.api.entities.algorithmresult.VisualizationDataDTO;
 import com.agh.bsct.api.entities.citydata.GeographicalNodeDTO;
 import com.agh.bsct.api.entities.graphdata.EdgeDTO;
 import com.agh.bsct.api.entities.graphdata.GraphDataDTO;
 import com.agh.bsct.api.entities.graphdata.NodeDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,6 @@ import java.util.List;
 @Service
 public class DataParser {
 
-    private static final String EDGES_KEY = "edges";
     private static final String ID_KEY = "id";
     private static final String IS_HOSPITAL_KEY = "isHospital";
     private static final String IS_CROSSING_KEY = "isCrossing";
@@ -26,15 +27,27 @@ public class DataParser {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public ObjectNode parseToJson(GraphDataDTO graphData, List<GeographicalNodeDTO> hospitals) {
-        ArrayList<ObjectNode> jsonStreets = getEdgesParsedToObjectNodes(graphData, hospitals);
-        return boxObjectNodesWithName(jsonStreets, EDGES_KEY);
+    public AlgorithmResultWithVisualizationDataDTO parseToVisualizationDataDTO(AlgorithmResultDTO algorithmResultDTO) {
+        ArrayList<ObjectNode> jsonStreets =
+                getEdgesParsedToObjectNodes(algorithmResultDTO.getGraphData(), algorithmResultDTO.getHospitals());
+
+        return AlgorithmResultWithVisualizationDataDTO.builder()
+                .visualizationDataDTO(getVisualizationDataDTO(jsonStreets))
+                .algorithmResultDTO(algorithmResultDTO)
+                .build();
+    }
+
+    private VisualizationDataDTO getVisualizationDataDTO(ArrayList<ObjectNode> jsonStreets) {
+        return VisualizationDataDTO.builder()
+                .edges(jsonStreets)
+                .build();
     }
 
     private ArrayList<ObjectNode> getEdgesParsedToObjectNodes(GraphDataDTO graphDataDTO,
                                                               List<GeographicalNodeDTO> hospitals) {
         var jsonStreets = new ArrayList<ObjectNode>();
         List<EdgeDTO> edgeDTOS = graphDataDTO.getEdgeDTOS();
+
         for (EdgeDTO edgeDTO : edgeDTOS) {
             ObjectNode jsonStreet = objectMapper.createObjectNode();
             jsonStreet.put(ID_KEY, edgeDTOS.indexOf(edgeDTO));
@@ -45,6 +58,7 @@ public class DataParser {
             jsonStreet.putArray(NODES_KEY).addAll(jsonNodes);
             jsonStreets.add(jsonStreet);
         }
+
         return jsonStreets;
     }
 
@@ -52,6 +66,7 @@ public class DataParser {
                                                                   List<NodeDTO> nodeDTOS,
                                                                   List<GeographicalNodeDTO> hospitals) {
         ArrayList<ObjectNode> jsonNodes = new ArrayList<>();
+
         for (Long nodeId : streetNodesIds) {
             ObjectNode jsonNode = objectMapper.createObjectNode();
             NodeDTO crossing = getCrossingWithGivenId(nodeId, nodeDTOS);
@@ -62,6 +77,7 @@ public class DataParser {
             jsonNode.put(IS_HOSPITAL_KEY, hospitals.contains(crossing.getGeographicalNodeDTO()));
             jsonNodes.add(jsonNode);
         }
+
         return jsonNodes;
     }
 
@@ -72,11 +88,4 @@ public class DataParser {
                 .orElseThrow(() -> new IllegalStateException("Cannot find GraphNode with given taskId"));
     }
 
-    private ObjectNode boxObjectNodesWithName(ArrayList<ObjectNode> jsonObjects, String name) {
-        ArrayNode jsonObjectsArrayNode = objectMapper.valueToTree(jsonObjects);
-        ObjectNode jsonBase = objectMapper.createObjectNode();
-        jsonBase.putArray(name).addAll(jsonObjectsArrayNode);
-
-        return jsonBase;
-    }
 }

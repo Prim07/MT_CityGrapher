@@ -13,7 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import static com.agh.bsct.algorithm.algorithms.dummylogger.DummyLogger.printMessage;
 
 @Component
 @Qualifier(SAAlgorithm.SIMULATED_ANNEALING_QUALIFIER)
@@ -48,6 +53,7 @@ public class SAAlgorithm implements IAlgorithm {
         algorithmTask.setStatus(AlgorithmCalculationStatus.CALCULATING_SHORTEST_PATHS);
         printMessage("Starting calculating shortest paths distances");
         final var shortestPathsDistances = graphService.getShortestPathsDistances(algorithmTask);
+
         algorithmTask.setStatus(AlgorithmCalculationStatus.CALCULATING);
 
         final var incidenceMap = algorithmTask.getGraph().getIncidenceMap();
@@ -77,6 +83,7 @@ public class SAAlgorithm implements IAlgorithm {
                 if (isAcceptedStateBetterThanBestState(acceptedFunctionValue, bestFunctionValue)) {
                     bestFunctionValue = acceptedFunctionValue;
                     bestState = acceptedState;
+                    updateHospitalsInAlgorithmTask(algorithmTask, bestState);
                 }
             } else {
                 var worseResultAcceptanceProbability = random.nextDouble();
@@ -85,6 +92,7 @@ public class SAAlgorithm implements IAlgorithm {
                     latestChanges.add(Boolean.TRUE);
                     acceptedState = localState;
                     acceptedFunctionValue = localFunctionValue;
+                    updateHospitalsInAlgorithmTask(algorithmTask, bestState);
                 } else {
                     latestChanges.add(Boolean.FALSE);
                 }
@@ -100,16 +108,16 @@ public class SAAlgorithm implements IAlgorithm {
 
         gnuplotOutputWriter.closeResources();
 
-        var hospitals = crossingsService.getGeographicalNodesForBestState(bestState, algorithmTask.getGraphDataDTO());
-        algorithmTask.setHospitals(hospitals);
+        updateHospitalsInAlgorithmTask(algorithmTask, bestState);
 
         printMessage("Set status to SUCCESS");
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
     }
 
-    private void printMessage(String message) {
-        Calendar now = Calendar.getInstance();
-        System.out.println(now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE) + ":" + now.get(Calendar.SECOND) + ":" + now.get(Calendar.MILLISECOND) + " - " + message);
+    private void updateHospitalsInAlgorithmTask(AlgorithmTask algorithmTask, List<GraphNode> bestState) {
+        var hospitals = crossingsService.getGeographicalNodesForBestState(
+                bestState, algorithmTask.getGraphDataDTO());
+        algorithmTask.setHospitals(hospitals);
     }
 
     private List<GraphNode> initializeGlobalState(AlgorithmTask algorithmTask,
