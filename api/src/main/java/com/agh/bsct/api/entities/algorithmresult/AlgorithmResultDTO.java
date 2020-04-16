@@ -4,7 +4,6 @@ import com.agh.bsct.api.entities.citydata.GeographicalNodeDTO;
 import com.agh.bsct.api.entities.graphdata.GraphDataDTO;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.Objects;
 
 @Getter
 @Builder
-@NoArgsConstructor
 public class AlgorithmResultDTO {
 
     @NotNull
@@ -25,14 +23,21 @@ public class AlgorithmResultDTO {
     private GraphDataDTO graphData;
 
     @NotNull
+    private Integer calculatingShortestPathsProgress;
+
+    @NotNull
     private List<GeographicalNodeDTO> hospitals;
 
     public AlgorithmResultDTO(String taskId, String status, GraphDataDTO graphData,
-                              List<GeographicalNodeDTO> hospitals) {
+                              Integer calculatingShortestPathsProgress, List<GeographicalNodeDTO> hospitals) {
         this.taskId = taskId;
         this.status = status;
         this.graphData = graphData;
+        this.calculatingShortestPathsProgress = calculatingShortestPathsProgress;
         this.hospitals = hospitals;
+    }
+
+    public AlgorithmResultDTO() {
     }
 
     @Override

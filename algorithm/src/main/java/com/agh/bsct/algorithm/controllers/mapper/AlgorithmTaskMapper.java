@@ -14,6 +14,7 @@ public class AlgorithmTaskMapper {
                 .taskId(algorithmTask.getTaskId())
                 .status(algorithmTask.getStatus().toString())
                 .graphData(algorithmTask.getGraphDataDTO())
+                .calculatingShortestPathsProgress(algorithmTask.getCalculatingShortestPathsProgress())
                 .hospitals(algorithmTask.getHospitals().orElse(Collections.emptyList()))
                 .build();
     }

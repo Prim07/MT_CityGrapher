@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static com.agh.bsct.algorithm.algorithms.dummylogger.DummyLogger.printMessage;
+
 @Component
 @Qualifier(SAAlgorithm.SIMULATED_ANNEALING_QUALIFIER)
 public class SAAlgorithm implements IAlgorithm {
@@ -48,9 +50,12 @@ public class SAAlgorithm implements IAlgorithm {
 
     @Override
     public void run(AlgorithmTask algorithmTask) {
+        algorithmTask.setStatus(AlgorithmCalculationStatus.CALCULATING_SHORTEST_PATHS);
+        printMessage("Starting calculating shortest paths distances");
+        final var shortestPathsDistances = graphService.getShortestPathsDistances(algorithmTask);
+
         algorithmTask.setStatus(AlgorithmCalculationStatus.CALCULATING);
 
-        final var shortestPathsDistances = graphService.getShortestPathsDistances(algorithmTask);
         final var incidenceMap = algorithmTask.getGraph().getIncidenceMap();
 
         var numberOfIterations = 0;
@@ -65,6 +70,7 @@ public class SAAlgorithm implements IAlgorithm {
 
         gnuplotOutputWriter.initializeResources(algorithmTask.getTaskId());
 
+        printMessage("Starting iterating");
         while (shouldIterate(latestChanges)) {
             var localState = changeRandomlyState(incidenceMap, acceptedState);
             var localFunctionValue = functionsService.calculateFunctionValue(shortestPathsDistances, localState);
@@ -77,6 +83,7 @@ public class SAAlgorithm implements IAlgorithm {
                 if (isAcceptedStateBetterThanBestState(acceptedFunctionValue, bestFunctionValue)) {
                     bestFunctionValue = acceptedFunctionValue;
                     bestState = acceptedState;
+                    updateHospitalsInAlgorithmTask(algorithmTask, bestState);
                 }
             } else {
                 var worseResultAcceptanceProbability = random.nextDouble();
@@ -85,6 +92,7 @@ public class SAAlgorithm implements IAlgorithm {
                     latestChanges.add(Boolean.TRUE);
                     acceptedState = localState;
                     acceptedFunctionValue = localFunctionValue;
+                    updateHospitalsInAlgorithmTask(algorithmTask, bestState);
                 } else {
                     latestChanges.add(Boolean.FALSE);
                 }
@@ -96,13 +104,20 @@ public class SAAlgorithm implements IAlgorithm {
             temperature = ALPHA * temperature;
             numberOfIterations++;
         }
+        printMessage("Ended iterating");
 
         gnuplotOutputWriter.closeResources();
 
-        var hospitals = crossingsService.getGeographicalNodesForBestState(bestState, algorithmTask.getGraphDataDTO());
-        algorithmTask.setHospitals(hospitals);
+        updateHospitalsInAlgorithmTask(algorithmTask, bestState);
 
+        printMessage("Set status to SUCCESS");
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
+    }
+
+    private void updateHospitalsInAlgorithmTask(AlgorithmTask algorithmTask, List<GraphNode> bestState) {
+        var hospitals = crossingsService.getGeographicalNodesForBestState(
+                bestState, algorithmTask.getGraphDataDTO());
+        algorithmTask.setHospitals(hospitals);
     }
 
     private List<GraphNode> initializeGlobalState(AlgorithmTask algorithmTask,
