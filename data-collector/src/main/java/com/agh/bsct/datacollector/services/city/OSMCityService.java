@@ -16,10 +16,10 @@ public class OSMCityService {
 
     private static final String SA_ALGORITHM_SYMBOL = "sa";
 
-    private GraphDataService graphService;
-    private CityDataService cityDataService;
-    private AlgorithmService algorithmService;
-    private DataParser dataParser;
+    private final GraphDataService graphService;
+    private final CityDataService cityDataService;
+    private final AlgorithmService algorithmService;
+    private final DataParser dataParser;
 
     @Autowired
     public OSMCityService(GraphDataService graphService,
