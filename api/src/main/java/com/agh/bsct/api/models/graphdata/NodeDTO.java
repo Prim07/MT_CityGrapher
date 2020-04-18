@@ -17,6 +17,9 @@ public class NodeDTO {
     private GeographicalNodeDTO geographicalNodeDTO;
 
     @NotNull
+    private NodeColour nodeColour;
+
+    @NotNull
     private Integer weight;
 
     public NodeDTO(GeographicalNodeDTO geographicalNodeDTO, Integer weight) {
