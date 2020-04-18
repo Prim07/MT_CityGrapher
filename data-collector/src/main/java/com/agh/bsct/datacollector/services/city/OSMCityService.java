@@ -1,5 +1,6 @@
 package com.agh.bsct.datacollector.services.city;
 
+import com.agh.bsct.api.models.algorithmcreated.AlgorithmTaskIdDTO;
 import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
 import com.agh.bsct.api.models.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
 import com.agh.bsct.api.models.taskinput.TaskInputDTO;
@@ -7,7 +8,6 @@ import com.agh.bsct.datacollector.services.algorithm.boundary.AlgorithmService;
 import com.agh.bsct.datacollector.services.data.CityDataService;
 import com.agh.bsct.datacollector.services.data.GraphDataService;
 import com.agh.bsct.datacollector.services.parser.DataParser;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +32,7 @@ public class OSMCityService {
         this.dataParser = dataParser;
     }
 
-    public ObjectNode getCityGraph(TaskInputDTO taskInputDTO) {
+    public AlgorithmTaskIdDTO getCityGraph(TaskInputDTO taskInputDTO) {
         var cityDataDTO = cityDataService.getCityDataDTO(taskInputDTO.getCityName());
         var graphDataDTO = graphService.getGraphDataDTO(cityDataDTO);
         var algorithmType = taskInputDTO.getAlgorithmType();

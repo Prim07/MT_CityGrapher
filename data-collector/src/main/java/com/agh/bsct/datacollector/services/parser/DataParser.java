@@ -24,8 +24,9 @@ public class DataParser {
     private static final String LONGITUDE_KEY = "lon";
     private static final String NODES_KEY = "nodes";
     private static final String WEIGHT_KEY = "weight";
+    private static final String COLOUR_KEY = "colour";
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AlgorithmResultWithVisualizationDataDTO parseToVisualizationDataDTO(AlgorithmResultDTO algorithmResultDTO) {
         ArrayList<ObjectNode> jsonStreets =
@@ -75,6 +76,9 @@ public class DataParser {
             jsonNode.put(LONGITUDE_KEY, crossing.getGeographicalNodeDTO().getLon());
             jsonNode.put(IS_CROSSING_KEY, crossing.getGeographicalNodeDTO().isCrossing());
             jsonNode.put(IS_HOSPITAL_KEY, hospitals.contains(crossing.getGeographicalNodeDTO()));
+            if (crossing.getNodeColour() != null) {
+                jsonNode.put(COLOUR_KEY, crossing.getNodeColour().toString());
+            }
             jsonNodes.add(jsonNode);
         }
 

@@ -1,11 +1,12 @@
 package com.agh.bsct.datacollector.controllers;
 
 
+import com.agh.bsct.api.models.algorithmcreated.AlgorithmCreatedResponseDTO;
+import com.agh.bsct.api.models.algorithmcreated.AlgorithmTaskIdDTO;
 import com.agh.bsct.api.models.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
 import com.agh.bsct.api.models.taskinput.TaskInputDTO;
 import com.agh.bsct.datacollector.controllers.config.PathsConstants;
 import com.agh.bsct.datacollector.services.city.OSMCityService;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,12 +32,15 @@ public class DataCollectorController {
 
     @RequestMapping(method = RequestMethod.POST, value = DATA_COLLECTOR_PATH + CREATE_TASK_PATH)
     @ResponseBody
-    public ResponseEntity<ObjectNode> getCityGraph(@RequestBody TaskInputDTO taskInputDTO) {
-        ObjectNode cityGraph = osmCityService.getCityGraph(taskInputDTO);
-        cityGraph.put("uri", PathsConstants.DATA_COLLECTOR_ROOT_PATH + DATA_COLLECTOR_PATH
-                + GET_TEMP_ALGORITHM_RESULT_PATH + cityGraph.get("taskId").asText());
+    public ResponseEntity<AlgorithmCreatedResponseDTO> getCityGraph(@RequestBody TaskInputDTO taskInputDTO) {
+        AlgorithmTaskIdDTO algorithmTaskIdDTO = osmCityService.getCityGraph(taskInputDTO);
+        AlgorithmCreatedResponseDTO algorithmCreatedResponseDTO = AlgorithmCreatedResponseDTO.builder()
+                .taskId(algorithmTaskIdDTO)
+                .uri(PathsConstants.DATA_COLLECTOR_ROOT_PATH + DATA_COLLECTOR_PATH
+                        + GET_TEMP_ALGORITHM_RESULT_PATH + algorithmTaskIdDTO.getTaskId())
+                .build();
 
-        return ResponseEntity.status(HttpStatus.OK).body(cityGraph);
+        return ResponseEntity.status(HttpStatus.OK).body(algorithmCreatedResponseDTO);
     }
 
     @GetMapping(DATA_COLLECTOR_PATH + GET_ALGORITHM_RESULT_PATH + TASK_ID_URI_PARAM)

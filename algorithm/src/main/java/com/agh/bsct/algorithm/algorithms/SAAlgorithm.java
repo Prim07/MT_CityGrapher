@@ -8,6 +8,7 @@ import com.agh.bsct.algorithm.services.graph.GraphNode;
 import com.agh.bsct.algorithm.services.graph.GraphService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmCalculationStatus;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
+import com.agh.bsct.api.models.graphdata.NodeDTO;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -109,15 +110,10 @@ public class SAAlgorithm implements IAlgorithm {
         gnuplotOutputWriter.closeResources();
 
         updateHospitalsInAlgorithmTask(algorithmTask, bestState);
+        updateColoursInNodes(algorithmTask);
 
         printMessage("Set status to SUCCESS");
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
-    }
-
-    private void updateHospitalsInAlgorithmTask(AlgorithmTask algorithmTask, List<GraphNode> bestState) {
-        var hospitals = crossingsService.getGeographicalNodesForBestState(
-                bestState, algorithmTask.getGraphDataDTO());
-        algorithmTask.setHospitals(hospitals);
     }
 
     private List<GraphNode> initializeGlobalState(AlgorithmTask algorithmTask,
@@ -187,6 +183,22 @@ public class SAAlgorithm implements IAlgorithm {
 
     private boolean shouldWorseChangeBeApplied(double worseResultAcceptanceProbability, double acceptanceProbability) {
         return worseResultAcceptanceProbability < acceptanceProbability;
+    }
+
+    private void updateHospitalsInAlgorithmTask(AlgorithmTask algorithmTask, List<GraphNode> bestState) {
+        var hospitals = crossingsService.getGeographicalNodesForBestState(
+                bestState, algorithmTask.getGraphDataDTO());
+        algorithmTask.setHospitals(hospitals);
+    }
+
+    private void updateColoursInNodes(AlgorithmTask algorithmTask) {
+        algorithmTask.getGraphDataDTO().getNodeDTOS().stream()
+                .map(NodeDTO::getNodeColour)
+                .forEach(nodeColour -> {
+                    nodeColour.setR(0);
+                    nodeColour.setG(0);
+                    nodeColour.setB(0);
+                });
     }
 
 }

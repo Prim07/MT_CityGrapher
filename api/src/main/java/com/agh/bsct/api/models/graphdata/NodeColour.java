@@ -4,20 +4,22 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
-
-@Setter
 @NoArgsConstructor
+@Setter
 @Builder
 public class NodeColour {
 
-    @NotNull
     private Integer R;
-
-    @NotNull
     private Integer G;
-
-    @NotNull
     private Integer B;
 
+    public NodeColour(Integer r, Integer g, Integer b) {
+        R = r;
+        G = g;
+        B = b;
+    }
+
+    public static NodeColour defaultColour() {
+        return new NodeColour(168, 48, 216);
+    }
 }
