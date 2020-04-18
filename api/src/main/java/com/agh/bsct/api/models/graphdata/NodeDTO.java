@@ -33,11 +33,12 @@ public class NodeDTO {
         if (o == null || getClass() != o.getClass()) return false;
         NodeDTO nodeDTO = (NodeDTO) o;
         return Objects.equals(geographicalNodeDTO, nodeDTO.geographicalNodeDTO) &&
+                Objects.equals(nodeColour, nodeDTO.nodeColour) &&
                 Objects.equals(weight, nodeDTO.weight);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(geographicalNodeDTO, weight);
+        return Objects.hash(geographicalNodeDTO, nodeColour, weight);
     }
 }
