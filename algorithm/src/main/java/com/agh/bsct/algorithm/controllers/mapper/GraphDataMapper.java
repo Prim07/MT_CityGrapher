@@ -34,14 +34,15 @@ public class GraphDataMapper {
             var firstNode = getNodeForId(nodeToEdgesIncidenceMap, firstNodeId);
             if (firstNode == null) {
                 var firstCrossing = getCrossingWithId(crossings, firstNodeId);
-                firstNode = new GraphNode(firstNodeId, firstCrossing.getWeight());
+                firstNode = new GraphNode(firstNodeId, firstCrossing.getWeight(),
+                        firstCrossing.getGeographicalNodeDTO());
             }
 
             var lastNodeId = edgeNodeIds.get(edgeNodeIds.size() - 1);
             var lastNode = getNodeForId(nodeToEdgesIncidenceMap, lastNodeId);
             if (lastNode == null) {
                 var lastCrossing = getCrossingWithId(crossings, lastNodeId);
-                lastNode = new GraphNode(lastNodeId, lastCrossing.getWeight());
+                lastNode = new GraphNode(lastNodeId, lastCrossing.getWeight(), lastCrossing.getGeographicalNodeDTO());
             }
 
             var firstNodeEdges = nodeToEdgesIncidenceMap.computeIfAbsent(firstNode, node -> new ArrayList<>());

@@ -1,11 +1,13 @@
 package com.agh.bsct.api.models.graphdata;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @NoArgsConstructor
 @Setter
+@Getter
 @Builder
 public class NodeColour {
 
@@ -19,7 +21,7 @@ public class NodeColour {
         B = b;
     }
 
-    public static NodeColour defaultColour() {
+    public static NodeColour createDefaultColour() {
         return new NodeColour(168, 48, 216);
     }
 }

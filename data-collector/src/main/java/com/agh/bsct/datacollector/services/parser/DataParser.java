@@ -6,6 +6,7 @@ import com.agh.bsct.api.models.algorithmresult.VisualizationDataDTO;
 import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
 import com.agh.bsct.api.models.graphdata.EdgeDTO;
 import com.agh.bsct.api.models.graphdata.GraphDataDTO;
+import com.agh.bsct.api.models.graphdata.NodeColour;
 import com.agh.bsct.api.models.graphdata.NodeDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -77,12 +78,21 @@ public class DataParser {
             jsonNode.put(IS_CROSSING_KEY, crossing.getGeographicalNodeDTO().isCrossing());
             jsonNode.put(IS_HOSPITAL_KEY, hospitals.contains(crossing.getGeographicalNodeDTO()));
             if (crossing.getNodeColour() != null) {
-                jsonNode.put(COLOUR_KEY, crossing.getNodeColour().toString());
+                jsonNode.put(COLOUR_KEY, getNodeColourAsObjectNode(crossing));
             }
             jsonNodes.add(jsonNode);
         }
 
         return jsonNodes;
+    }
+
+    private String getNodeColourAsObjectNode(NodeDTO crossing) {
+        ObjectNode colourObjectNode = objectMapper.createObjectNode();
+        NodeColour nodeColour = crossing.getNodeColour();
+        colourObjectNode.put("R", nodeColour.getR());
+        colourObjectNode.put("G", nodeColour.getG());
+        colourObjectNode.put("B", nodeColour.getB());
+        return colourObjectNode.toString();
     }
 
     private NodeDTO getCrossingWithGivenId(Long nodeId, List<NodeDTO> nodeDTOS) {

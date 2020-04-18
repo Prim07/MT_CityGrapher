@@ -3,12 +3,12 @@ package com.agh.bsct.algorithm.algorithms;
 import com.agh.bsct.algorithm.algorithms.outputwriter.GnuplotOutputWriter;
 import com.agh.bsct.algorithm.services.algorithms.AlgorithmFunctionsService;
 import com.agh.bsct.algorithm.services.algorithms.CrossingsService;
+import com.agh.bsct.algorithm.services.colours.ColoursService;
 import com.agh.bsct.algorithm.services.graph.GraphEdge;
 import com.agh.bsct.algorithm.services.graph.GraphNode;
 import com.agh.bsct.algorithm.services.graph.GraphService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmCalculationStatus;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
-import com.agh.bsct.api.models.graphdata.NodeDTO;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,20 +31,23 @@ public class SAAlgorithm implements IAlgorithm {
     private static final double ALPHA = 0.999;
     private static final int QUEUE_SIZE = 50;
 
-    private AlgorithmFunctionsService functionsService;
-    private CrossingsService crossingsService;
-    private GraphService graphService;
-    private GnuplotOutputWriter gnuplotOutputWriter;
-    private Random random;
+    private final AlgorithmFunctionsService functionsService;
+    private final CrossingsService crossingsService;
+    private final GraphService graphService;
+    private final ColoursService coloursService;
+    private final GnuplotOutputWriter gnuplotOutputWriter;
+    private final Random random;
 
     @Autowired
     public SAAlgorithm(AlgorithmFunctionsService functionsService,
                        CrossingsService crossingsService,
                        GraphService graphService,
+                       ColoursService coloursService,
                        GnuplotOutputWriter gnuplotOutputWriter) {
         this.functionsService = functionsService;
         this.crossingsService = crossingsService;
         this.graphService = graphService;
+        this.coloursService = coloursService;
         this.gnuplotOutputWriter = gnuplotOutputWriter;
         this.random = new Random();
     }
@@ -110,7 +113,7 @@ public class SAAlgorithm implements IAlgorithm {
         gnuplotOutputWriter.closeResources();
 
         updateHospitalsInAlgorithmTask(algorithmTask, bestState);
-        updateColoursInNodes(algorithmTask);
+        coloursService.updateColoursInNodes(algorithmTask);
 
         printMessage("Set status to SUCCESS");
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
@@ -189,16 +192,6 @@ public class SAAlgorithm implements IAlgorithm {
         var hospitals = crossingsService.getGeographicalNodesForBestState(
                 bestState, algorithmTask.getGraphDataDTO());
         algorithmTask.setHospitals(hospitals);
-    }
-
-    private void updateColoursInNodes(AlgorithmTask algorithmTask) {
-        algorithmTask.getGraphDataDTO().getNodeDTOS().stream()
-                .map(NodeDTO::getNodeColour)
-                .forEach(nodeColour -> {
-                    nodeColour.setR(0);
-                    nodeColour.setG(0);
-                    nodeColour.setB(0);
-                });
     }
 
 }
