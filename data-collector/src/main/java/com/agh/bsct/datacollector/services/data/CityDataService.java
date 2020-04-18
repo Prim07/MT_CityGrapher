@@ -1,8 +1,8 @@
 package com.agh.bsct.datacollector.services.data;
 
-import com.agh.bsct.api.entities.citydata.CityDataDTO;
-import com.agh.bsct.api.entities.citydata.GeographicalNodeDTO;
-import com.agh.bsct.api.entities.citydata.StreetDTO;
+import com.agh.bsct.api.models.citydata.CityDataDTO;
+import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
+import com.agh.bsct.api.models.citydata.StreetDTO;
 import com.agh.bsct.datacollector.library.adapter.queryresult.OverpassQueryResult;
 import com.agh.bsct.datacollector.services.city.QueryForCityProvider;
 import com.agh.bsct.datacollector.services.database.DatabaseService;

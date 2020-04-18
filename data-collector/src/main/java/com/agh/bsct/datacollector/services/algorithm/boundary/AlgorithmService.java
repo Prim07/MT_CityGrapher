@@ -1,7 +1,7 @@
 package com.agh.bsct.datacollector.services.algorithm.boundary;
 
-import com.agh.bsct.api.entities.algorithmorder.AlgorithmOrderDTO;
-import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultDTO;
+import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
+import com.agh.bsct.api.models.algorithmresult.AlgorithmResultDTO;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;

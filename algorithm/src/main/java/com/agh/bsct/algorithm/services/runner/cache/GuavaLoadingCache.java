@@ -4,7 +4,7 @@ import com.agh.bsct.algorithm.controllers.mapper.GraphDataMapper;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
 import com.agh.bsct.algorithm.services.runner.repository.AlgorithmTaskRepository;
 import com.agh.bsct.algorithm.services.runner.repository.AsyncTaskRepository;
-import com.agh.bsct.api.entities.algorithmorder.AlgorithmOrderDTO;
+import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;

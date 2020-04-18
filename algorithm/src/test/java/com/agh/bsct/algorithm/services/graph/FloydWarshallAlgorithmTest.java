@@ -3,7 +3,7 @@ package com.agh.bsct.algorithm.services.graph;
 import com.agh.bsct.algorithm.services.graph.initializer.GraphInitializer;
 import com.agh.bsct.algorithm.services.graphdata.GraphDataService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
-import com.agh.bsct.api.entities.algorithmorder.AlgorithmOrderDTO;
+import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

@@ -4,8 +4,8 @@ import com.agh.bsct.algorithm.controllers.mapper.AlgorithmTaskMapper;
 import com.agh.bsct.algorithm.services.runner.AlgorithmRunnerService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmCalculationStatus;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
-import com.agh.bsct.api.entities.algorithmorder.AlgorithmOrderDTO;
-import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultDTO;
+import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
+import com.agh.bsct.api.models.algorithmresult.AlgorithmResultDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.cache.CacheLoader;
@@ -99,7 +99,7 @@ public class AlgorithmController {
         return ResponseEntity.status(HttpStatus.OK).body(json);
     }
 
-    private ResponseEntity<ObjectNode> getSuccessfulResponseForCancelledAlgorithmTask(@PathVariable String taskId) {
+    private ResponseEntity<ObjectNode> getSuccessfulResponseForCancelledAlgorithmTask(String taskId) {
         ObjectNode objectNode = objectMapper.createObjectNode();
         objectNode.put("message", "IAlgorithm task with ID: " + taskId + " was successfully cancelled");
         return ResponseEntity.status(HttpStatus.OK).body(objectNode);

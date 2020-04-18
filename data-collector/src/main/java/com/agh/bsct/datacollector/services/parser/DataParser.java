@@ -1,12 +1,12 @@
 package com.agh.bsct.datacollector.services.parser;
 
-import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultDTO;
-import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
-import com.agh.bsct.api.entities.algorithmresult.VisualizationDataDTO;
-import com.agh.bsct.api.entities.citydata.GeographicalNodeDTO;
-import com.agh.bsct.api.entities.graphdata.EdgeDTO;
-import com.agh.bsct.api.entities.graphdata.GraphDataDTO;
-import com.agh.bsct.api.entities.graphdata.NodeDTO;
+import com.agh.bsct.api.models.algorithmresult.AlgorithmResultDTO;
+import com.agh.bsct.api.models.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
+import com.agh.bsct.api.models.algorithmresult.VisualizationDataDTO;
+import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
+import com.agh.bsct.api.models.graphdata.EdgeDTO;
+import com.agh.bsct.api.models.graphdata.GraphDataDTO;
+import com.agh.bsct.api.models.graphdata.NodeDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;

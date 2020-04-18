@@ -1,8 +1,8 @@
 package com.agh.bsct.datacollector.services.city;
 
-import com.agh.bsct.api.entities.algorithmorder.AlgorithmOrderDTO;
-import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
-import com.agh.bsct.api.entities.taskinput.TaskInputDTO;
+import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
+import com.agh.bsct.api.models.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
+import com.agh.bsct.api.models.taskinput.TaskInputDTO;
 import com.agh.bsct.datacollector.services.algorithm.boundary.AlgorithmService;
 import com.agh.bsct.datacollector.services.data.CityDataService;
 import com.agh.bsct.datacollector.services.data.GraphDataService;

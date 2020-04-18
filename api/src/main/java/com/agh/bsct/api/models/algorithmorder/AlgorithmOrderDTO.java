@@ -1,6 +1,6 @@
-package com.agh.bsct.api.entities.algorithmorder;
+package com.agh.bsct.api.models.algorithmorder;
 
-import com.agh.bsct.api.entities.graphdata.GraphDataDTO;
+import com.agh.bsct.api.models.graphdata.GraphDataDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

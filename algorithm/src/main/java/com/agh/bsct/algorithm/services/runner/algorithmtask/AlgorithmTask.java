@@ -1,9 +1,9 @@
 package com.agh.bsct.algorithm.services.runner.algorithmtask;
 
 import com.agh.bsct.algorithm.services.graph.Graph;
-import com.agh.bsct.api.entities.algorithmorder.AlgorithmOrderDTO;
-import com.agh.bsct.api.entities.citydata.GeographicalNodeDTO;
-import com.agh.bsct.api.entities.graphdata.GraphDataDTO;
+import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
+import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
+import com.agh.bsct.api.models.graphdata.GraphDataDTO;
 
 import java.util.List;
 import java.util.Optional;

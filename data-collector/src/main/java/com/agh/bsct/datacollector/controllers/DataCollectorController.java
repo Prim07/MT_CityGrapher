@@ -1,8 +1,8 @@
 package com.agh.bsct.datacollector.controllers;
 
 
-import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
-import com.agh.bsct.api.entities.taskinput.TaskInputDTO;
+import com.agh.bsct.api.models.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
+import com.agh.bsct.api.models.taskinput.TaskInputDTO;
 import com.agh.bsct.datacollector.controllers.config.PathsConstants;
 import com.agh.bsct.datacollector.services.city.OSMCityService;
 import com.fasterxml.jackson.databind.node.ObjectNode;

@@ -1,6 +1,6 @@
-package com.agh.bsct.api.entities.graphdata;
+package com.agh.bsct.api.models.graphdata;
 
-import com.agh.bsct.api.entities.citydata.GeographicalNodeDTO;
+import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

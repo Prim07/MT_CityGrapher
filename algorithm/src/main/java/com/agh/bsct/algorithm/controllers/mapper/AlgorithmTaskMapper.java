@@ -1,7 +1,7 @@
 package com.agh.bsct.algorithm.controllers.mapper;
 
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
-import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultDTO;
+import com.agh.bsct.api.models.algorithmresult.AlgorithmResultDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;

@@ -1,6 +1,6 @@
 package com.agh.bsct.datacollector.services.result.joiner;
 
-import com.agh.bsct.api.entities.citydata.StreetDTO;
+import com.agh.bsct.api.models.citydata.StreetDTO;
 import com.agh.bsct.datacollector.library.adapter.queryresult.Element;
 import com.agh.bsct.datacollector.library.adapter.queryresult.OverpassQueryResult;
 import org.springframework.stereotype.Service;

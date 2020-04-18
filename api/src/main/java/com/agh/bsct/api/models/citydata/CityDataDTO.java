@@ -1,4 +1,4 @@
-package com.agh.bsct.api.entities.citydata;
+package com.agh.bsct.api.models.citydata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,9 +1,9 @@
 package com.agh.bsct.algorithm.services.algorithms;
 
 import com.agh.bsct.algorithm.services.graph.GraphNode;
-import com.agh.bsct.api.entities.citydata.GeographicalNodeDTO;
-import com.agh.bsct.api.entities.graphdata.GraphDataDTO;
-import com.agh.bsct.api.entities.graphdata.NodeDTO;
+import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
+import com.agh.bsct.api.models.graphdata.GraphDataDTO;
+import com.agh.bsct.api.models.graphdata.NodeDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

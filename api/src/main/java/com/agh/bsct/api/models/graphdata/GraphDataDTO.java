@@ -1,4 +1,4 @@
-package com.agh.bsct.api.entities.graphdata;
+package com.agh.bsct.api.models.graphdata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
