@@ -113,7 +113,7 @@ public class SAAlgorithm implements IAlgorithm {
         gnuplotOutputWriter.closeResources();
 
         updateHospitalsInAlgorithmTask(algorithmTask, bestState);
-        coloursService.updateColoursInNodes(algorithmTask);
+        coloursService.updateColoursInNodes(algorithmTask, shortestPathsDistances);
 
         printMessage("Set status to SUCCESS");
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);

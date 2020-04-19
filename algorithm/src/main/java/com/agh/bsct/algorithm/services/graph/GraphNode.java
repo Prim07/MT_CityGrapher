@@ -29,6 +29,10 @@ public class GraphNode {
         return id;
     }
 
+    public void setNodeColour(NodeColour nodeColour) {
+        this.nodeColour = nodeColour;
+    }
+
     public NodeColour getNodeColour() {
         return nodeColour;
     }

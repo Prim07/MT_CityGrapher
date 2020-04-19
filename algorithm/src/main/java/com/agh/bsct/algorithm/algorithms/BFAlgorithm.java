@@ -52,7 +52,7 @@ public class BFAlgorithm implements IAlgorithm {
         var bestState = getBestState(algorithmTask, shortestPathsDistances);
 
         updateHospitalsInAlgorithmTask(algorithmTask, bestState);
-        coloursService.updateColoursInNodes(algorithmTask);
+        coloursService.updateColoursInNodes(algorithmTask, shortestPathsDistances);
         printMessage("Set status to SUCCESS");
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
     }
