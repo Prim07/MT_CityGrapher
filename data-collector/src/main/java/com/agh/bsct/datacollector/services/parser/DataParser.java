@@ -4,9 +4,9 @@ import com.agh.bsct.api.models.algorithmresult.AlgorithmResultDTO;
 import com.agh.bsct.api.models.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
 import com.agh.bsct.api.models.algorithmresult.VisualizationDataDTO;
 import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
+import com.agh.bsct.api.models.graphdata.Colour;
 import com.agh.bsct.api.models.graphdata.EdgeDTO;
 import com.agh.bsct.api.models.graphdata.GraphDataDTO;
-import com.agh.bsct.api.models.graphdata.NodeColour;
 import com.agh.bsct.api.models.graphdata.NodeDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -54,6 +54,7 @@ public class DataParser {
             ObjectNode jsonStreet = objectMapper.createObjectNode();
             jsonStreet.put(ID_KEY, edgeDTOS.indexOf(edgeDTO));
             jsonStreet.put(WEIGHT_KEY, edgeDTO.getWeight());
+            jsonStreet.put(COLOUR_KEY, getNodeColourAsObjectNode(edgeDTO.getEdgeColour()));
             var streetNodesIds = edgeDTO.getStreetDTO().getNodesIds();
             var crossingDTOS = graphDataDTO.getNodeDTOS();
             ArrayList<ObjectNode> jsonNodes = getCrossingsParsedToObjectNodes(streetNodesIds, crossingDTOS, hospitals);
@@ -78,7 +79,7 @@ public class DataParser {
             jsonNode.put(IS_CROSSING_KEY, crossing.getGeographicalNodeDTO().isCrossing());
             jsonNode.put(IS_HOSPITAL_KEY, hospitals.contains(crossing.getGeographicalNodeDTO()));
             if (crossing.getNodeColour() != null) {
-                jsonNode.put(COLOUR_KEY, getNodeColourAsObjectNode(crossing));
+                jsonNode.put(COLOUR_KEY, getNodeColourAsObjectNode(crossing.getNodeColour()));
             }
             jsonNodes.add(jsonNode);
         }
@@ -86,12 +87,11 @@ public class DataParser {
         return jsonNodes;
     }
 
-    private String getNodeColourAsObjectNode(NodeDTO crossing) {
+    private String getNodeColourAsObjectNode(Colour colour) {
         ObjectNode colourObjectNode = objectMapper.createObjectNode();
-        NodeColour nodeColour = crossing.getNodeColour();
-        colourObjectNode.put("R", nodeColour.getR());
-        colourObjectNode.put("G", nodeColour.getG());
-        colourObjectNode.put("B", nodeColour.getB());
+        colourObjectNode.put("R", colour.getR());
+        colourObjectNode.put("G", colour.getG());
+        colourObjectNode.put("B", colour.getB());
         return colourObjectNode.toString();
     }
 

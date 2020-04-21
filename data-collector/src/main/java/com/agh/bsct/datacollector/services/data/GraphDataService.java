@@ -42,7 +42,7 @@ public class GraphDataService {
                 weight += calculateDistance(startNode, endNode);
             }
 
-            edges.add(new EdgeDTO(street, weight));
+            edges.add(new EdgeDTO(street, weight, getNodeWithId(nodesIds.get(0), nodes)));
         }
 
         return edges;

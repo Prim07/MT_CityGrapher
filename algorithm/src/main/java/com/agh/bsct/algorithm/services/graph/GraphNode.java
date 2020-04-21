@@ -1,23 +1,23 @@
 package com.agh.bsct.algorithm.services.graph;
 
 import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
-import com.agh.bsct.api.models.graphdata.NodeColour;
+import com.agh.bsct.api.models.graphdata.Colour;
 
 import java.util.Objects;
 
 public class GraphNode {
 
-    private long id;
-    private int weight;
+    private final long id;
+    private final int weight;
     private GeographicalNodeDTO geographicalNodeDTO;
-    private NodeColour nodeColour;
+    private Colour nodeColour;
 
 
     public GraphNode(Long id, Integer weight, GeographicalNodeDTO geographicalNodeDTO) {
         this.id = id;
         this.weight = weight;
         this.geographicalNodeDTO = geographicalNodeDTO;
-        this.nodeColour = NodeColour.createDefaultColour();
+        this.nodeColour = Colour.createDefaultColour();
     }
 
     public GraphNode(Long id, Integer weight) {
@@ -29,12 +29,12 @@ public class GraphNode {
         return id;
     }
 
-    public void setNodeColour(NodeColour nodeColour) {
-        this.nodeColour = nodeColour;
+    public Colour getNodeColour() {
+        return nodeColour;
     }
 
-    public NodeColour getNodeColour() {
-        return nodeColour;
+    public void setNodeColour(Colour nodeColour) {
+        this.nodeColour = nodeColour;
     }
 
     public GeographicalNodeDTO getGeographicalNodeDTO() {
@@ -48,11 +48,12 @@ public class GraphNode {
         GraphNode graphNode = (GraphNode) o;
         return id == graphNode.id &&
                 weight == graphNode.weight &&
+                Objects.equals(geographicalNodeDTO, graphNode.geographicalNodeDTO) &&
                 Objects.equals(nodeColour, graphNode.nodeColour);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, weight, nodeColour);
+        return Objects.hash(id, weight, geographicalNodeDTO, nodeColour);
     }
 }

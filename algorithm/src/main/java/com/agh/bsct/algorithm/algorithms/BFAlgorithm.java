@@ -1,7 +1,6 @@
 package com.agh.bsct.algorithm.algorithms;
 
 import com.agh.bsct.algorithm.services.algorithms.AlgorithmFunctionsService;
-import com.agh.bsct.algorithm.services.algorithms.CrossingsService;
 import com.agh.bsct.algorithm.services.colours.ColoursService;
 import com.agh.bsct.algorithm.services.graph.GraphNode;
 import com.agh.bsct.algorithm.services.graph.GraphService;
@@ -25,18 +24,15 @@ public class BFAlgorithm implements IAlgorithm {
     static final String BRUTE_FORCE_QUALIFIER = "bruteForceAlgorithm";
 
     private final AlgorithmFunctionsService algorithmFunctionsService;
-    private final CrossingsService crossingsService;
     private final GraphService graphService;
     private final ColoursService coloursService;
 
 
     @Autowired
     public BFAlgorithm(AlgorithmFunctionsService algorithmFunctionsService,
-                       CrossingsService crossingsService,
                        GraphService graphService,
                        ColoursService coloursService) {
         this.algorithmFunctionsService = algorithmFunctionsService;
-        this.crossingsService = crossingsService;
         this.graphService = graphService;
         this.coloursService = coloursService;
     }
@@ -144,9 +140,7 @@ public class BFAlgorithm implements IAlgorithm {
     }
 
     private void updateHospitalsInAlgorithmTask(AlgorithmTask algorithmTask, List<GraphNode> bestState) {
-        var hospitals = crossingsService.getGeographicalNodesForBestState(
-                bestState, algorithmTask.getGraphDataDTO());
-        algorithmTask.setHospitals(hospitals);
+        algorithmTask.setHospitals(bestState);
     }
 
 }

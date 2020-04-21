@@ -10,8 +10,8 @@ public class GraphEdge {
      * Start node is the key of the map.
      */
 
-    private GraphNode endGraphNode;
-    private double weight;
+    private final GraphNode endGraphNode;
+    private final double weight;
 
     public GraphEdge(GraphNode endGraphNode, double weight) {
         this.endGraphNode = endGraphNode;

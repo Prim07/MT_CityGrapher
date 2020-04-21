@@ -9,19 +9,19 @@ import lombok.Setter;
 @Setter
 @Getter
 @Builder
-public class NodeColour {
+public class Colour {
 
     private Integer R;
     private Integer G;
     private Integer B;
 
-    public NodeColour(Integer r, Integer g, Integer b) {
+    public Colour(Integer r, Integer g, Integer b) {
         R = r;
         G = g;
         B = b;
     }
 
-    public static NodeColour createDefaultColour() {
-        return new NodeColour(168, 48, 216);
+    public static Colour createDefaultColour() {
+        return new Colour(168, 48, 216);
     }
 }

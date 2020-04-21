@@ -2,8 +2,6 @@ package com.agh.bsct.algorithm.services.colours;
 
 import com.agh.bsct.algorithm.services.graph.GraphNode;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
-import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
-import com.agh.bsct.api.models.graphdata.NodeColour;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -20,37 +18,37 @@ public class ColoursService {
 
         var hospitals = algorithmTask.getHospitals().get();
         var hospitalToClosestNodes = buildHospitalToClosestNodes(algorithmTask, shortestPathsDistances, hospitals);
-        var hospitalToColour = buildHospitalToColour(hospitalToClosestNodes.keySet());
+        setHospitalColours(hospitalToClosestNodes.keySet());
 
-        hospitalToClosestNodes.forEach((hospital, closestNodes) -> closestNodes
-                .forEach(graphNode -> graphNode.setNodeColour(hospitalToColour.get(hospital))));
+        hospitalToClosestNodes.forEach((hospital, closestNodes) ->
+                closestNodes.forEach(closestNode -> closestNode.setNodeColour(hospital.getNodeColour())));
     }
 
-    private HashMap<GeographicalNodeDTO, Set<GraphNode>> buildHospitalToClosestNodes(AlgorithmTask algorithmTask,
-                                                                                     Map<Long, Map<Long, Double>> shortestPathsDistances, List<GeographicalNodeDTO> hospitals) {
-        var hospitalToClosestNodes = new HashMap<GeographicalNodeDTO, Set<GraphNode>>();
+    /*public void updateColoursInEdges(AlgorithmTask algorithmTask) {
+        if (!algorithmTask.getHospitals().isPresent()) {
+            return;
+        }
+
+        algorithmTask.getGraph().getIncidenceMap().forEach((graphNode, graphEdges) ->
+                graphEdges.forEach(edge -> edge.setEdgeColour(graphNode.getNodeColour())));
+    }*/
+
+    private HashMap<GraphNode, Set<GraphNode>> buildHospitalToClosestNodes(AlgorithmTask algorithmTask,
+                                                                           Map<Long, Map<Long, Double>> shortestPathsDistances,
+                                                                           List<GraphNode> hospitals) {
+        var hospitalToClosestNodes = new HashMap<GraphNode, Set<GraphNode>>();
 
         for (GraphNode currentNode : algorithmTask.getGraph().getIncidenceMap().keySet()) {
             Map<Long, Double> distancesFromCurrentNode = shortestPathsDistances.get(currentNode.getId());
-            GeographicalNodeDTO closestHospital = getClosestHospital(hospitals, distancesFromCurrentNode);
+            GraphNode closestHospital = getClosestHospital(hospitals, distancesFromCurrentNode);
             updateHospitalToClosestNodes(hospitalToClosestNodes, currentNode, closestHospital);
         }
         return hospitalToClosestNodes;
     }
 
-    private void updateHospitalToClosestNodes(Map<GeographicalNodeDTO, Set<GraphNode>> hospitalToClosestNodes,
-                                              GraphNode currentNode,
-                                              GeographicalNodeDTO closestHospital) {
-        if (!hospitalToClosestNodes.containsKey(closestHospital)) {
-            hospitalToClosestNodes.put(closestHospital, new HashSet<>());
-        }
-
-        hospitalToClosestNodes.get(closestHospital).add(currentNode);
-    }
-
-    private GeographicalNodeDTO getClosestHospital(List<GeographicalNodeDTO> hospitals,
-                                                   Map<Long, Double> distancesFromCurrentNode) {
-        AtomicReference<GeographicalNodeDTO> closestHospital = new AtomicReference<>(hospitals.get(0));
+    private GraphNode getClosestHospital(List<GraphNode> hospitals,
+                                         Map<Long, Double> distancesFromCurrentNode) {
+        AtomicReference<GraphNode> closestHospital = new AtomicReference<>(hospitals.get(0));
         hospitals.stream()
                 .skip(0)
                 .forEach(currentHospital -> {
@@ -63,23 +61,29 @@ public class ColoursService {
     }
 
     private boolean isDistanceShorter(Map<Long, Double> distancesFromCurrentNode,
-                                      GeographicalNodeDTO closestHospital,
-                                      GeographicalNodeDTO currentHospital) {
+                                      GraphNode closestHospital,
+                                      GraphNode currentHospital) {
         Double shortestDistance = distancesFromCurrentNode.get(closestHospital.getId());
         Double currentDistance = distancesFromCurrentNode.get(currentHospital.getId());
 
         return currentDistance < shortestDistance;
     }
 
-    private Map<GeographicalNodeDTO, NodeColour> buildHospitalToColour(Set<GeographicalNodeDTO> hospitalsSet) {
-        List<GeographicalNodeDTO> hospitals = new ArrayList<>(hospitalsSet);
+    private void updateHospitalToClosestNodes(Map<GraphNode, Set<GraphNode>> hospitalToClosestNodes,
+                                              GraphNode currentNode,
+                                              GraphNode closestHospital) {
+        if (!hospitalToClosestNodes.containsKey(closestHospital)) {
+            hospitalToClosestNodes.put(closestHospital, new HashSet<>());
+        }
+
+        hospitalToClosestNodes.get(closestHospital).add(currentNode);
+    }
+
+    private void setHospitalColours(Set<GraphNode> hospitalsSet) {
+        List<GraphNode> hospitals = new ArrayList<>(hospitalsSet);
         int numberOfAvailableColours = Colours.COLOURS.length;
-        Map<GeographicalNodeDTO, NodeColour> hospitalToColour = new HashMap<>();
 
         IntStream.range(0, hospitals.size()).forEach(i ->
-                hospitalToColour.put(hospitals.get(i), Colours.COLOURS[i % numberOfAvailableColours]));
-
-        return hospitalToColour;
-
+                hospitals.get(i).setNodeColour(Colours.COLOURS[i % numberOfAvailableColours]));
     }
 }
