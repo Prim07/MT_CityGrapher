@@ -1,6 +1,6 @@
-package com.agh.bsct.api.entities.graphdata;
+package com.agh.bsct.api.models.graphdata;
 
-import com.agh.bsct.api.entities.citydata.GeographicalNodeDTO;
+import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +17,9 @@ public class NodeDTO {
     private GeographicalNodeDTO geographicalNodeDTO;
 
     @NotNull
+    private Colour nodeColour;
+
+    @NotNull
     private Integer weight;
 
     public NodeDTO(GeographicalNodeDTO geographicalNodeDTO, Integer weight) {
@@ -30,11 +33,12 @@ public class NodeDTO {
         if (o == null || getClass() != o.getClass()) return false;
         NodeDTO nodeDTO = (NodeDTO) o;
         return Objects.equals(geographicalNodeDTO, nodeDTO.geographicalNodeDTO) &&
+                Objects.equals(nodeColour, nodeDTO.nodeColour) &&
                 Objects.equals(weight, nodeDTO.weight);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(geographicalNodeDTO, weight);
+        return Objects.hash(geographicalNodeDTO, nodeColour, weight);
     }
 }

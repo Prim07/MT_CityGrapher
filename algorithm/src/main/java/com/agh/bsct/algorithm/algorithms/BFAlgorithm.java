@@ -1,7 +1,7 @@
 package com.agh.bsct.algorithm.algorithms;
 
 import com.agh.bsct.algorithm.services.algorithms.AlgorithmFunctionsService;
-import com.agh.bsct.algorithm.services.algorithms.CrossingsService;
+import com.agh.bsct.algorithm.services.colours.ColoursService;
 import com.agh.bsct.algorithm.services.graph.GraphNode;
 import com.agh.bsct.algorithm.services.graph.GraphService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmCalculationStatus;
@@ -23,18 +23,18 @@ public class BFAlgorithm implements IAlgorithm {
 
     static final String BRUTE_FORCE_QUALIFIER = "bruteForceAlgorithm";
 
-    private AlgorithmFunctionsService algorithmFunctionsService;
-    private CrossingsService crossingsService;
-    private GraphService graphService;
+    private final AlgorithmFunctionsService algorithmFunctionsService;
+    private final GraphService graphService;
+    private final ColoursService coloursService;
 
 
     @Autowired
     public BFAlgorithm(AlgorithmFunctionsService algorithmFunctionsService,
-                       CrossingsService crossingsService,
-                       GraphService graphService) {
+                       GraphService graphService,
+                       ColoursService coloursService) {
         this.algorithmFunctionsService = algorithmFunctionsService;
-        this.crossingsService = crossingsService;
         this.graphService = graphService;
+        this.coloursService = coloursService;
     }
 
     @Override
@@ -48,6 +48,7 @@ public class BFAlgorithm implements IAlgorithm {
         var bestState = getBestState(algorithmTask, shortestPathsDistances);
 
         updateHospitalsInAlgorithmTask(algorithmTask, bestState);
+        coloursService.updateColoursInNodes(algorithmTask, shortestPathsDistances);
         printMessage("Set status to SUCCESS");
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
     }
@@ -139,9 +140,7 @@ public class BFAlgorithm implements IAlgorithm {
     }
 
     private void updateHospitalsInAlgorithmTask(AlgorithmTask algorithmTask, List<GraphNode> bestState) {
-        var hospitals = crossingsService.getGeographicalNodesForBestState(
-                bestState, algorithmTask.getGraphDataDTO());
-        algorithmTask.setHospitals(hospitals);
+        algorithmTask.setHospitals(bestState);
     }
 
 }

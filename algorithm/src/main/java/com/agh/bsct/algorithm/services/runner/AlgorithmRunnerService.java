@@ -6,7 +6,7 @@ import com.agh.bsct.algorithm.services.runner.asyncrunner.AsyncAlgorithmTaskRunn
 import com.agh.bsct.algorithm.services.runner.cache.AlgorithmResultCache;
 import com.agh.bsct.algorithm.services.runner.cache.GuavaLoadingCache;
 import com.agh.bsct.algorithm.services.runner.repository.AsyncTaskRepository;
-import com.agh.bsct.api.entities.algorithmorder.AlgorithmOrderDTO;
+import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

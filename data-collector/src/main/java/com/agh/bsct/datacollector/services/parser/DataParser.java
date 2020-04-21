@@ -1,12 +1,13 @@
 package com.agh.bsct.datacollector.services.parser;
 
-import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultDTO;
-import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
-import com.agh.bsct.api.entities.algorithmresult.VisualizationDataDTO;
-import com.agh.bsct.api.entities.citydata.GeographicalNodeDTO;
-import com.agh.bsct.api.entities.graphdata.EdgeDTO;
-import com.agh.bsct.api.entities.graphdata.GraphDataDTO;
-import com.agh.bsct.api.entities.graphdata.NodeDTO;
+import com.agh.bsct.api.models.algorithmresult.AlgorithmResultDTO;
+import com.agh.bsct.api.models.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
+import com.agh.bsct.api.models.algorithmresult.VisualizationDataDTO;
+import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
+import com.agh.bsct.api.models.graphdata.Colour;
+import com.agh.bsct.api.models.graphdata.EdgeDTO;
+import com.agh.bsct.api.models.graphdata.GraphDataDTO;
+import com.agh.bsct.api.models.graphdata.NodeDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,9 @@ public class DataParser {
     private static final String LONGITUDE_KEY = "lon";
     private static final String NODES_KEY = "nodes";
     private static final String WEIGHT_KEY = "weight";
+    private static final String COLOUR_KEY = "colour";
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AlgorithmResultWithVisualizationDataDTO parseToVisualizationDataDTO(AlgorithmResultDTO algorithmResultDTO) {
         ArrayList<ObjectNode> jsonStreets =
@@ -52,6 +54,7 @@ public class DataParser {
             ObjectNode jsonStreet = objectMapper.createObjectNode();
             jsonStreet.put(ID_KEY, edgeDTOS.indexOf(edgeDTO));
             jsonStreet.put(WEIGHT_KEY, edgeDTO.getWeight());
+            jsonStreet.put(COLOUR_KEY, getNodeColourAsObjectNode(edgeDTO.getEdgeColour()));
             var streetNodesIds = edgeDTO.getStreetDTO().getNodesIds();
             var crossingDTOS = graphDataDTO.getNodeDTOS();
             ArrayList<ObjectNode> jsonNodes = getCrossingsParsedToObjectNodes(streetNodesIds, crossingDTOS, hospitals);
@@ -75,10 +78,21 @@ public class DataParser {
             jsonNode.put(LONGITUDE_KEY, crossing.getGeographicalNodeDTO().getLon());
             jsonNode.put(IS_CROSSING_KEY, crossing.getGeographicalNodeDTO().isCrossing());
             jsonNode.put(IS_HOSPITAL_KEY, hospitals.contains(crossing.getGeographicalNodeDTO()));
+            if (crossing.getNodeColour() != null) {
+                jsonNode.put(COLOUR_KEY, getNodeColourAsObjectNode(crossing.getNodeColour()));
+            }
             jsonNodes.add(jsonNode);
         }
 
         return jsonNodes;
+    }
+
+    private String getNodeColourAsObjectNode(Colour colour) {
+        ObjectNode colourObjectNode = objectMapper.createObjectNode();
+        colourObjectNode.put("R", colour.getR());
+        colourObjectNode.put("G", colour.getG());
+        colourObjectNode.put("B", colour.getB());
+        return colourObjectNode.toString();
     }
 
     private NodeDTO getCrossingWithGivenId(Long nodeId, List<NodeDTO> nodeDTOS) {

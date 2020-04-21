@@ -1,4 +1,4 @@
-package com.agh.bsct.api.entities.taskinput;
+package com.agh.bsct.api.models.taskinput;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

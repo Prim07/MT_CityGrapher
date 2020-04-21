@@ -1,4 +1,4 @@
-package com.agh.bsct.api.entities.algorithmresult;
+package com.agh.bsct.api.models.algorithmresult;
 
 import lombok.Builder;
 import lombok.Getter;

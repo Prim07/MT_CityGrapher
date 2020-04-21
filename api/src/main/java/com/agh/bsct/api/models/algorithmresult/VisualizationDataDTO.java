@@ -1,4 +1,4 @@
-package com.agh.bsct.api.entities.algorithmresult;
+package com.agh.bsct.api.models.algorithmresult;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Builder;

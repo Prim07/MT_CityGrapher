@@ -2,7 +2,7 @@ package com.agh.bsct.algorithm.algorithms;
 
 import com.agh.bsct.algorithm.algorithms.outputwriter.GnuplotOutputWriter;
 import com.agh.bsct.algorithm.services.algorithms.AlgorithmFunctionsService;
-import com.agh.bsct.algorithm.services.algorithms.CrossingsService;
+import com.agh.bsct.algorithm.services.colours.ColoursService;
 import com.agh.bsct.algorithm.services.graph.GraphEdge;
 import com.agh.bsct.algorithm.services.graph.GraphNode;
 import com.agh.bsct.algorithm.services.graph.GraphService;
@@ -30,20 +30,20 @@ public class SAAlgorithm implements IAlgorithm {
     private static final double ALPHA = 0.999;
     private static final int QUEUE_SIZE = 50;
 
-    private AlgorithmFunctionsService functionsService;
-    private CrossingsService crossingsService;
-    private GraphService graphService;
-    private GnuplotOutputWriter gnuplotOutputWriter;
-    private Random random;
+    private final AlgorithmFunctionsService functionsService;
+    private final GraphService graphService;
+    private final ColoursService coloursService;
+    private final GnuplotOutputWriter gnuplotOutputWriter;
+    private final Random random;
 
     @Autowired
     public SAAlgorithm(AlgorithmFunctionsService functionsService,
-                       CrossingsService crossingsService,
                        GraphService graphService,
+                       ColoursService coloursService,
                        GnuplotOutputWriter gnuplotOutputWriter) {
         this.functionsService = functionsService;
-        this.crossingsService = crossingsService;
         this.graphService = graphService;
+        this.coloursService = coloursService;
         this.gnuplotOutputWriter = gnuplotOutputWriter;
         this.random = new Random();
     }
@@ -109,15 +109,10 @@ public class SAAlgorithm implements IAlgorithm {
         gnuplotOutputWriter.closeResources();
 
         updateHospitalsInAlgorithmTask(algorithmTask, bestState);
+        coloursService.updateColoursInNodes(algorithmTask, shortestPathsDistances);
 
         printMessage("Set status to SUCCESS");
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
-    }
-
-    private void updateHospitalsInAlgorithmTask(AlgorithmTask algorithmTask, List<GraphNode> bestState) {
-        var hospitals = crossingsService.getGeographicalNodesForBestState(
-                bestState, algorithmTask.getGraphDataDTO());
-        algorithmTask.setHospitals(hospitals);
     }
 
     private List<GraphNode> initializeGlobalState(AlgorithmTask algorithmTask,
@@ -187,6 +182,10 @@ public class SAAlgorithm implements IAlgorithm {
 
     private boolean shouldWorseChangeBeApplied(double worseResultAcceptanceProbability, double acceptanceProbability) {
         return worseResultAcceptanceProbability < acceptanceProbability;
+    }
+
+    private void updateHospitalsInAlgorithmTask(AlgorithmTask algorithmTask, List<GraphNode> bestState) {
+        algorithmTask.setHospitals(bestState);
     }
 
 }

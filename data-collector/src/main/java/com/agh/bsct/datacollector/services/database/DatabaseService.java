@@ -1,6 +1,6 @@
 package com.agh.bsct.datacollector.services.database;
 
-import com.agh.bsct.api.entities.citydata.CityDataDTO;
+import com.agh.bsct.api.models.citydata.CityDataDTO;
 import com.agh.bsct.datacollector.services.database.entities.CityDataEntity;
 import com.agh.bsct.datacollector.services.database.repositories.CityDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;

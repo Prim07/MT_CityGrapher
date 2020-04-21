@@ -1,11 +1,11 @@
 package com.agh.bsct.datacollector.services.data;
 
-import com.agh.bsct.api.entities.citydata.CityDataDTO;
-import com.agh.bsct.api.entities.citydata.GeographicalNodeDTO;
-import com.agh.bsct.api.entities.citydata.StreetDTO;
-import com.agh.bsct.api.entities.graphdata.EdgeDTO;
-import com.agh.bsct.api.entities.graphdata.GraphDataDTO;
-import com.agh.bsct.api.entities.graphdata.NodeDTO;
+import com.agh.bsct.api.models.citydata.CityDataDTO;
+import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
+import com.agh.bsct.api.models.citydata.StreetDTO;
+import com.agh.bsct.api.models.graphdata.EdgeDTO;
+import com.agh.bsct.api.models.graphdata.GraphDataDTO;
+import com.agh.bsct.api.models.graphdata.NodeDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class GraphDataService {
                 weight += calculateDistance(startNode, endNode);
             }
 
-            edges.add(new EdgeDTO(street, weight));
+            edges.add(new EdgeDTO(street, weight, getNodeWithId(nodesIds.get(0), nodes)));
         }
 
         return edges;

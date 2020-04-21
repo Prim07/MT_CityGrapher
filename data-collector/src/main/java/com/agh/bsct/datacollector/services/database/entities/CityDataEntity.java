@@ -1,6 +1,6 @@
 package com.agh.bsct.datacollector.services.database.entities;
 
-import com.agh.bsct.api.entities.citydata.CityDataDTO;
+import com.agh.bsct.api.models.citydata.CityDataDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

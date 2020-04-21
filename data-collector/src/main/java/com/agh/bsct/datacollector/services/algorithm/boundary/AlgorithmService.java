@@ -1,8 +1,8 @@
 package com.agh.bsct.datacollector.services.algorithm.boundary;
 
-import com.agh.bsct.api.entities.algorithmorder.AlgorithmOrderDTO;
-import com.agh.bsct.api.entities.algorithmresult.AlgorithmResultDTO;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.agh.bsct.api.models.algorithmcreated.AlgorithmTaskIdDTO;
+import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
+import com.agh.bsct.api.models.algorithmresult.AlgorithmResultDTO;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -22,23 +22,15 @@ public class AlgorithmService {
         this.restTemplate = new RestTemplateBuilder().build();
     }
 
-    public ObjectNode run(AlgorithmOrderDTO algorithmOrderDTO) {
+    public AlgorithmTaskIdDTO run(AlgorithmOrderDTO algorithmOrderDTO) {
         var uri = new DefaultUriBuilderFactory(ALGORITHM_PATH).builder()
                 .build()
                 .toString();
-        return restTemplate.postForObject(uri, algorithmOrderDTO, ObjectNode.class);
+        return restTemplate.postForObject(uri, algorithmOrderDTO, AlgorithmTaskIdDTO.class);
     }
 
     public AlgorithmResultDTO getResult(String taskId) {
         var uri = new DefaultUriBuilderFactory(ALGORITHM_PATH).builder()
-                .path(taskId)
-                .build()
-                .toString();
-        return restTemplate.getForObject(uri, AlgorithmResultDTO.class);
-    }
-
-    public AlgorithmResultDTO getTempResult(String taskId) {
-        var uri = new DefaultUriBuilderFactory(ALGORITHM_TEMP_RESULT_PATH).builder()
                 .path(taskId)
                 .build()
                 .toString();

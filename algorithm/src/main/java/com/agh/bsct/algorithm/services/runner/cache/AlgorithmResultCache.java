@@ -1,7 +1,7 @@
 package com.agh.bsct.algorithm.services.runner.cache;
 
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
-import com.agh.bsct.api.entities.algorithmorder.AlgorithmOrderDTO;
+import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
 
 import java.util.concurrent.ExecutionException;
 
