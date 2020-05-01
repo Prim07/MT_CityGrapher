@@ -1,5 +1,6 @@
 package com.agh.bsct.algorithm.services.graph;
 
+import com.agh.bsct.algorithm.services.database.DatabaseService;
 import com.agh.bsct.algorithm.services.graph.initializer.GraphInitializer;
 import com.agh.bsct.algorithm.services.graphdata.GraphDataService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
@@ -16,7 +17,7 @@ import static org.mockito.Mockito.mock;
 class FloydWarshallAlgorithmTest {
 
     private final GraphInitializer graphInitializer = new GraphInitializer();
-    private final GraphService graphService = new GraphService(new GraphDataService());
+    private final GraphService graphService = new GraphService(new GraphDataService(), mock(DatabaseService.class));
 
     @Test
     void shouldBeTheSameWhenMilocinIsCalculatedMultipleTimes() {
@@ -37,19 +38,20 @@ class FloydWarshallAlgorithmTest {
         graphService.replaceGraphWithItsLargestConnectedComponent(graph);
 
         var algorithmTask = new AlgorithmTask(mock(String.class), mock(AlgorithmOrderDTO.class), graph);
-        var shortestPathsDistancesToCompare = graphService.calculateShortestPathsDistances(algorithmTask);
+        var shortestPathsDistancesToCompare = graphService.calculateShortestPathsDistances(algorithmTask).getDistances();
 
         for (int i = 0; i < loopCount; i++) {
             var shortestPathsDistances = graphService.calculateShortestPathsDistances(algorithmTask);
+            Map<Long, Map<Long, Double>> distances = shortestPathsDistances.getDistances();
 
-            for (Map<Long, Double> currentNodeShortestPathsDistance : shortestPathsDistances.values()) {
+            for (Map<Long, Double> currentNodeShortestPathsDistance : distances.values()) {
                 for (Double distance : currentNodeShortestPathsDistance.values()) {
                     assertNotEquals(Double.MAX_VALUE, distance);
                 }
             }
 
-            assertEquals(shortestPathsDistancesToCompare.size(), shortestPathsDistances.size());
-            assertEquals(shortestPathsDistancesToCompare, shortestPathsDistances);
+            assertEquals(shortestPathsDistancesToCompare.size(), distances.size());
+            assertEquals(shortestPathsDistancesToCompare, distances);
         }
     }
 }

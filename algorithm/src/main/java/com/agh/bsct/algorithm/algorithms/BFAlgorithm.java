@@ -4,6 +4,7 @@ import com.agh.bsct.algorithm.services.algorithms.AlgorithmFunctionsService;
 import com.agh.bsct.algorithm.services.colours.ColoursService;
 import com.agh.bsct.algorithm.services.graph.GraphNode;
 import com.agh.bsct.algorithm.services.graph.GraphService;
+import com.agh.bsct.algorithm.services.graph.ShortestPathsDistances;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmCalculationStatus;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static com.agh.bsct.algorithm.algorithms.dummylogger.DummyLogger.printMessage;
 
@@ -54,7 +54,7 @@ public class BFAlgorithm implements IAlgorithm {
     }
 
     private List<GraphNode> getBestState(AlgorithmTask algorithmTask,
-                                         Map<Long, Map<Long, Double>> shortestPathsDistances) {
+                                         ShortestPathsDistances shortestPathsDistances) {
         Integer numberOfResults = algorithmTask.getNumberOfResults();
 
         if (numberOfResults.equals(1)) {
@@ -72,7 +72,7 @@ public class BFAlgorithm implements IAlgorithm {
     }
 
     private List<GraphNode> getBestStateForOneHospital(AlgorithmTask algorithmTask,
-                                                       Map<Long, Map<Long, Double>> shortestPathsDistances) {
+                                                       ShortestPathsDistances shortestPathsDistances) {
         List<GraphNode> bestState = Collections.emptyList();
         double bestFunctionValue = Double.MAX_VALUE;
         var incidenceMap = algorithmTask.getGraph().getIncidenceMap();
@@ -92,7 +92,7 @@ public class BFAlgorithm implements IAlgorithm {
     }
 
     private List<GraphNode> getBestStateForTwoHospitals(AlgorithmTask algorithmTask,
-                                                        Map<Long, Map<Long, Double>> shortestPathsDistances) {
+                                                        ShortestPathsDistances shortestPathsDistances) {
         List<GraphNode> bestState = Collections.emptyList();
         double bestFunctionValue = Double.MAX_VALUE;
         var incidenceMap = algorithmTask.getGraph().getIncidenceMap();
@@ -115,7 +115,7 @@ public class BFAlgorithm implements IAlgorithm {
     }
 
     private List<GraphNode> getBestStateForThreeHospitals(AlgorithmTask algorithmTask,
-                                                          Map<Long, Map<Long, Double>> shortestPathsDistances) {
+                                                          ShortestPathsDistances shortestPathsDistances) {
         List<GraphNode> bestState = Collections.emptyList();
         double bestFunctionValue = Double.MAX_VALUE;
         var incidenceMap = algorithmTask.getGraph().getIncidenceMap();

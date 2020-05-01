@@ -37,10 +37,11 @@ public class OSMCityService {
         var graphDataDTO = graphService.getGraphDataDTO(cityDataDTO);
         var algorithmType = taskInputDTO.getAlgorithmType();
         var numberOfResults = taskInputDTO.getNumberOfResults();
+        var cityName = taskInputDTO.getCityName();
 
         var algorithmOrderDTO = algorithmType
-                .map(typeValue -> new AlgorithmOrderDTO(numberOfResults, graphDataDTO, typeValue))
-                .orElseGet(() -> new AlgorithmOrderDTO(numberOfResults, graphDataDTO, SA_ALGORITHM_SYMBOL));
+                .map(typeValue -> new AlgorithmOrderDTO(numberOfResults, graphDataDTO, typeValue, cityName))
+                .orElseGet(() -> new AlgorithmOrderDTO(numberOfResults, graphDataDTO, SA_ALGORITHM_SYMBOL, cityName));
 
         return algorithmService.run(algorithmOrderDTO);
     }

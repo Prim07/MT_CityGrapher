@@ -20,10 +20,15 @@ public class AlgorithmOrderDTO {
     @NotNull
     private String algorithmType;
 
-    public AlgorithmOrderDTO(Integer numberOfResults, GraphDataDTO graphDataDTO, String algorithmType) {
+    @NotNull
+    private String cityName;
+
+    public AlgorithmOrderDTO(Integer numberOfResults, GraphDataDTO graphDataDTO, String algorithmType,
+                             String cityName) {
         this.numberOfResults = numberOfResults;
         this.graphDataDTO = graphDataDTO;
         this.algorithmType = algorithmType;
+        this.cityName = cityName;
     }
 
     @Override
@@ -32,11 +37,13 @@ public class AlgorithmOrderDTO {
         if (o == null || getClass() != o.getClass()) return false;
         AlgorithmOrderDTO that = (AlgorithmOrderDTO) o;
         return Objects.equals(numberOfResults, that.numberOfResults) &&
-                Objects.equals(graphDataDTO, that.graphDataDTO);
+                Objects.equals(graphDataDTO, that.graphDataDTO) &&
+                Objects.equals(algorithmType, that.algorithmType) &&
+                Objects.equals(cityName, that.cityName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(numberOfResults, graphDataDTO);
+        return Objects.hash(numberOfResults, graphDataDTO, algorithmType, cityName);
     }
 }
