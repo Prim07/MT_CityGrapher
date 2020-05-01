@@ -47,13 +47,11 @@ public class GraphNode {
         if (o == null || getClass() != o.getClass()) return false;
         GraphNode graphNode = (GraphNode) o;
         return id == graphNode.id &&
-                weight == graphNode.weight &&
-                Objects.equals(geographicalNodeDTO, graphNode.geographicalNodeDTO) &&
-                Objects.equals(nodeColour, graphNode.nodeColour);
+                Objects.equals(geographicalNodeDTO, graphNode.geographicalNodeDTO);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, weight, geographicalNodeDTO, nodeColour);
+        return Objects.hash(id, geographicalNodeDTO);
     }
 }
