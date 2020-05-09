@@ -16,9 +16,9 @@ import java.util.concurrent.Future;
 @Service
 public class AlgorithmRunnerService {
 
-    private AlgorithmResultCache algorithmResultCache;
-    private AsyncAlgorithmTaskRunner asyncAlgorithmTaskRunner;
-    private AsyncTaskRepository asyncTaskRepository;
+    private final AlgorithmResultCache algorithmResultCache;
+    private final AsyncAlgorithmTaskRunner asyncAlgorithmTaskRunner;
+    private final AsyncTaskRepository asyncTaskRepository;
 
     @Autowired
     public AlgorithmRunnerService(GuavaLoadingCache guavaLoadingCache,

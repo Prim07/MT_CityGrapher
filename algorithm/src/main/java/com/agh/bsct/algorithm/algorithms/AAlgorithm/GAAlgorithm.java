@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 import static com.agh.bsct.algorithm.algorithms.dummylogger.DummyLogger.printMessage;
 
 @Component
-@Qualifier(AAlgorithm.ANT_QUALIFIER)
-public class AAlgorithm implements IAlgorithm {
+@Qualifier(GAAlgorithm.GENETIC_QUALIFIER)
+public class GAAlgorithm implements IAlgorithm {
 
-    public static final String ANT_QUALIFIER = "antAlgorithm";
+    public static final String GENETIC_QUALIFIER = "geneticAlgorithm";
 
     private static final int QUEUE_SIZE = 50;
 
@@ -25,7 +25,7 @@ public class AAlgorithm implements IAlgorithm {
     private final LatestChangesService latestChangesService;
 
     @Autowired
-    public AAlgorithm(GraphService graphService, ColoursService coloursService) {
+    public GAAlgorithm(GraphService graphService, ColoursService coloursService) {
         this.graphService = graphService;
         this.coloursService = coloursService;
         this.latestChangesService = new LatestChangesService(QUEUE_SIZE);
