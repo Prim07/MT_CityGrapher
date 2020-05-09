@@ -42,7 +42,7 @@ public class AlgorithmRunnerService {
     }
 
     private void cancelTaskIfItsThreadIsCancelled(String id) throws ExecutionException {
-        Future asyncTaskById = asyncTaskRepository.getAsyncTaskById(id);
+        var asyncTaskById = asyncTaskRepository.getAsyncTaskById(id);
         if (asyncTaskById.isCancelled()) {
             AlgorithmTask algorithmTask = algorithmResultCache.getTask(id);
             algorithmTask.setStatus(AlgorithmCalculationStatus.CANCELLED);
@@ -51,7 +51,7 @@ public class AlgorithmRunnerService {
     }
 
     public void cancel(String id) {
-        Future asyncTaskById = asyncTaskRepository.getAsyncTaskById(id);
+        var asyncTaskById = asyncTaskRepository.getAsyncTaskById(id);
         asyncTaskById.cancel(true);
     }
 }
