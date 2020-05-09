@@ -34,17 +34,23 @@ public class GraphService {
     }
 
     private void replaceGraphWithItsLargestConnectedComponent(AlgorithmTask algorithmTask) {
+        //TODO remove souts later
+        System.out.println("1");
         var graph = algorithmTask.getGraph();
+        System.out.println("2");
         var nodeToEdgesIncidenceMap = graph.getIncidenceMap();
 
         var graphNodesFromConnectedComponent = findLargestConnectedComponent(nodeToEdgesIncidenceMap);
+        System.out.println("3");
 
         var nodeToEdgesIncidenceMapCopy = new HashMap<GraphNode, List<GraphEdge>>();
 
         removeNodesNotIncludedInLCC(nodeToEdgesIncidenceMap, graphNodesFromConnectedComponent,
                 nodeToEdgesIncidenceMapCopy);
+        System.out.println("4");
 
         graph.setNodeToEdgesIncidenceMap(nodeToEdgesIncidenceMapCopy);
+        System.out.println("5");
 
         var graphDataDTO = algorithmTask.getGraphDataDTO();
         graphDataService.replaceGraphWithItsLargestConnectedComponent(graphDataDTO, graphNodesFromConnectedComponent);

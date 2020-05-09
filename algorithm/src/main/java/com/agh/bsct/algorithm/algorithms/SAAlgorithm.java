@@ -35,7 +35,6 @@ public class SAAlgorithm implements IAlgorithm {
     private final ColoursService coloursService;
     private final GnuplotOutputWriter gnuplotOutputWriter;
     private final Random random;
-    private final LatestChangesService latestChangesService;
 
     @Autowired
     public SAAlgorithm(AlgorithmFunctionsService functionsService,
@@ -47,7 +46,6 @@ public class SAAlgorithm implements IAlgorithm {
         this.coloursService = coloursService;
         this.gnuplotOutputWriter = gnuplotOutputWriter;
         this.random = new Random();
-        this.latestChangesService = new LatestChangesService(QUEUE_SIZE);
     }
 
     @Override
@@ -67,6 +65,7 @@ public class SAAlgorithm implements IAlgorithm {
         var bestState = acceptedState;
         var acceptedFunctionValue = functionsService.calculateFunctionValue(shortestPathsDistances, acceptedState);
         var bestFunctionValue = acceptedFunctionValue;
+        var latestChangesService = new LatestChangesService(QUEUE_SIZE);
 
         gnuplotOutputWriter.initializeResources(algorithmTask.getTaskId());
 

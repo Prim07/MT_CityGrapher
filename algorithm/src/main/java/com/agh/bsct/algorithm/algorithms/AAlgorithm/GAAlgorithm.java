@@ -8,11 +8,13 @@ import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmCalculation
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import static com.agh.bsct.algorithm.algorithms.dummylogger.DummyLogger.printMessage;
 
 @Component
+@Scope("prototype")
 @Qualifier(GAAlgorithm.GENETIC_QUALIFIER)
 public class GAAlgorithm implements IAlgorithm {
 
@@ -22,13 +24,11 @@ public class GAAlgorithm implements IAlgorithm {
 
     private final GraphService graphService;
     private final ColoursService coloursService;
-    private final LatestChangesService latestChangesService;
 
     @Autowired
     public GAAlgorithm(GraphService graphService, ColoursService coloursService) {
         this.graphService = graphService;
         this.coloursService = coloursService;
-        this.latestChangesService = new LatestChangesService(QUEUE_SIZE);
     }
 
     @Override
@@ -42,6 +42,7 @@ public class GAAlgorithm implements IAlgorithm {
 
         algorithmTask.setStatus(AlgorithmCalculationStatus.CALCULATING);
         population.initializePopulation();
+        var latestChangesService = new LatestChangesService(QUEUE_SIZE);
 
         while (latestChangesService.shouldIterate()) {
             population.calculateEachIndividualFitnessScore();
