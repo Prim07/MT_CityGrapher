@@ -50,6 +50,8 @@ public class BFAlgorithm implements IAlgorithm {
         updateHospitalsInAlgorithmTask(algorithmTask, bestState);
         coloursService.updateColoursInNodes(algorithmTask, shortestPathsDistances);
         printMessage("Set status to SUCCESS");
+        printMessage("BF Best state value: " +
+                algorithmFunctionsService.calculateFunctionValue(shortestPathsDistances, bestState));
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
     }
 

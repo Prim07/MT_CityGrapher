@@ -1,7 +1,7 @@
 package com.agh.bsct.algorithm.algorithms.AAlgorithm;
 
 import com.agh.bsct.algorithm.algorithms.IAlgorithm;
-import com.agh.bsct.algorithm.services.algorithms.AlgorithmFunctionsService;
+import com.agh.bsct.algorithm.services.algorithms.LatestChangesService;
 import com.agh.bsct.algorithm.services.colours.ColoursService;
 import com.agh.bsct.algorithm.services.graph.GraphService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmCalculationStatus;
@@ -18,40 +18,57 @@ public class AAlgorithm implements IAlgorithm {
 
     public static final String ANT_QUALIFIER = "antAlgorithm";
 
-    private static final int NUMBER_OF_EPOCHS = 10000;
+    private static final int QUEUE_SIZE = 50;
 
-    private final AlgorithmFunctionsService algorithmFunctionsService;
     private final GraphService graphService;
     private final ColoursService coloursService;
-    private final Population population;
+    private final LatestChangesService latestChangesService;
 
     @Autowired
-    public AAlgorithm(AlgorithmFunctionsService algorithmFunctionsService,
-                      GraphService graphService,
-                      ColoursService coloursService, Population population) {
-        this.algorithmFunctionsService = algorithmFunctionsService;
+    public AAlgorithm(GraphService graphService, ColoursService coloursService) {
         this.graphService = graphService;
         this.coloursService = coloursService;
-        this.population = population;
+        this.latestChangesService = new LatestChangesService(QUEUE_SIZE);
     }
 
     @Override
     public void run(AlgorithmTask algorithmTask) {
         algorithmTask.setStatus(AlgorithmCalculationStatus.CALCULATING_SHORTEST_PATHS);
         printMessage("Starting calculating shortest paths distances");
-//        final var shortestPathsDistances = graphService.getShortestPathsDistances(algorithmTask);
+        final var shortestPathsDistances = graphService.getShortestPathsDistances(algorithmTask);
+        var population = new Population(algorithmTask, shortestPathsDistances);
 
-        population.initializePopulation(algorithmTask);
         int epochNumber = 0;
 
-        while (shouldContinue(epochNumber)) {
+        algorithmTask.setStatus(AlgorithmCalculationStatus.CALCULATING);
+        population.initializePopulation();
+
+        while (latestChangesService.shouldIterate()) {
             population.calculateEachIndividualFitnessScore();
+            population.sortByFitnessScore();
+            boolean wasUpdated = population.updateBestState();
+            population.chooseParentsPopulation();
+            population.crossoverParents();
+            population.mutateParents();
+            population.updatePopulation();
+
+            latestChangesService.add(wasUpdated);
+            if (wasUpdated) {
+                algorithmTask.setHospitals(population.getGlobalBestIndividual().getIndividualNodes());
+            }
 
             epochNumber++;
+            if (wasUpdated) {
+                printMessage("Epoch: " + epochNumber
+                        + " | Score: " + population.getGlobalBestIndividual().getFitnessScore().toString());
+            }
         }
-    }
 
-    private boolean shouldContinue(int epochNumber) {
-        return epochNumber < NUMBER_OF_EPOCHS;
+        var globalBestIndividual = population.getGlobalBestIndividual();
+        printMessage("GA Best state value: " + globalBestIndividual.getFitnessScore()
+                + " after " + epochNumber + " epochs");
+        algorithmTask.setHospitals(globalBestIndividual.getIndividualNodes());
+        coloursService.updateColoursInNodes(algorithmTask, shortestPathsDistances);
+        algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
     }
 }

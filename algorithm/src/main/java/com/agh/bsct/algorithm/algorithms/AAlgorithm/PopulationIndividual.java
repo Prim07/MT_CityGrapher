@@ -2,19 +2,34 @@ package com.agh.bsct.algorithm.algorithms.AAlgorithm;
 
 import com.agh.bsct.algorithm.services.graph.GraphNode;
 
+import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Set;
 
 public class PopulationIndividual {
 
-    private final Set<GraphNode> populationIndividualNodes;
+    private final ArrayList<GraphNode> individualNodes;
+    private Double fitnessScore = Double.MAX_VALUE;
 
-    public PopulationIndividual(Set<GraphNode> populationIndividualNodes) {
-        this.populationIndividualNodes = populationIndividualNodes;
+    public PopulationIndividual(ArrayList<GraphNode> individualNodes) {
+        this.individualNodes = individualNodes;
     }
 
-    public static void calculateFitnessScore(PopulationIndividual populationIndividual) {
+    public static PopulationIndividual getCopyOf(PopulationIndividual givenIndividual) {
+        var copy = new PopulationIndividual(givenIndividual.getIndividualNodes());
+        copy.setFitnessScore(givenIndividual.getFitnessScore());
+        return copy;
+    }
 
+    public Double getFitnessScore() {
+        return fitnessScore;
+    }
+
+    public void setFitnessScore(Double fitnessScore) {
+        this.fitnessScore = fitnessScore;
+    }
+
+    public ArrayList<GraphNode> getIndividualNodes() {
+        return individualNodes;
     }
 
     @Override
@@ -22,11 +37,11 @@ public class PopulationIndividual {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PopulationIndividual that = (PopulationIndividual) o;
-        return Objects.equals(populationIndividualNodes, that.populationIndividualNodes);
+        return Objects.equals(individualNodes, that.individualNodes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(populationIndividualNodes);
+        return Objects.hash(individualNodes);
     }
 }
