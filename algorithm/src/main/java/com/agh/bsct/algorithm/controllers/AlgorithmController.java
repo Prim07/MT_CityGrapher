@@ -85,6 +85,12 @@ public class AlgorithmController {
         }
     }
 
+    @GetMapping(ALGORITHM_PATH + "test")
+    @ResponseBody
+    public String test() {
+        return "Hello, world!";
+    }
+
     private ResponseEntity<AlgorithmResultDTO> getSuccessfulResponseWithAlgorithmTask(AlgorithmTask task) {
         AlgorithmResultDTO algorithmResultDTO = algorithmTaskMapper.mapToAlgorithmResultDTO(task);
         return ResponseEntity.status(HttpStatus.OK).body(algorithmResultDTO);
