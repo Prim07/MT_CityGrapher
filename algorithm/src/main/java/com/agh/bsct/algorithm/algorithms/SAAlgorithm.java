@@ -2,13 +2,13 @@ package com.agh.bsct.algorithm.algorithms;
 
 import com.agh.bsct.algorithm.algorithms.outputwriter.GnuplotOutputWriter;
 import com.agh.bsct.algorithm.services.algorithms.AlgorithmFunctionsService;
+import com.agh.bsct.algorithm.services.algorithms.LatestChangesService;
 import com.agh.bsct.algorithm.services.colours.ColoursService;
 import com.agh.bsct.algorithm.services.graph.GraphEdge;
 import com.agh.bsct.algorithm.services.graph.GraphNode;
 import com.agh.bsct.algorithm.services.graph.GraphService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmCalculationStatus;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -65,19 +65,18 @@ public class SAAlgorithm implements IAlgorithm {
         var bestState = acceptedState;
         var acceptedFunctionValue = functionsService.calculateFunctionValue(shortestPathsDistances, acceptedState);
         var bestFunctionValue = acceptedFunctionValue;
-
-        var latestChanges = initializeLatestChanges();
+        var latestChangesService = new LatestChangesService(QUEUE_SIZE);
 
         gnuplotOutputWriter.initializeResources(algorithmTask.getTaskId());
 
         printMessage("Starting iterating");
-        while (shouldIterate(latestChanges)) {
+        while (latestChangesService.shouldIterate()) {
             var localState = changeRandomlyState(incidenceMap, acceptedState);
             var localFunctionValue = functionsService.calculateFunctionValue(shortestPathsDistances, localState);
             double delta = localFunctionValue - acceptedFunctionValue;
 
             if (isBetterStateFound(acceptedFunctionValue, localFunctionValue)) {
-                latestChanges.add(Boolean.TRUE);
+                latestChangesService.add(Boolean.TRUE);
                 acceptedState = localState;
                 acceptedFunctionValue = localFunctionValue;
                 if (isAcceptedStateBetterThanBestState(acceptedFunctionValue, bestFunctionValue)) {
@@ -89,12 +88,12 @@ public class SAAlgorithm implements IAlgorithm {
                 var worseResultAcceptanceProbability = random.nextDouble();
                 var acceptanceProbability = Math.exp(-delta / temperature);
                 if (shouldWorseChangeBeApplied(worseResultAcceptanceProbability, acceptanceProbability)) {
-                    latestChanges.add(Boolean.TRUE);
+                    latestChangesService.add(Boolean.TRUE);
                     acceptedState = localState;
                     acceptedFunctionValue = localFunctionValue;
                     updateHospitalsInAlgorithmTask(algorithmTask, bestState);
                 } else {
-                    latestChanges.add(Boolean.FALSE);
+                    latestChangesService.add(Boolean.FALSE);
                 }
             }
 
@@ -111,7 +110,7 @@ public class SAAlgorithm implements IAlgorithm {
         updateHospitalsInAlgorithmTask(algorithmTask, bestState);
         coloursService.updateColoursInNodes(algorithmTask, shortestPathsDistances);
 
-        printMessage("Set status to SUCCESS");
+        printMessage("SA Best state value: " + bestFunctionValue);
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
     }
 
@@ -132,16 +131,6 @@ public class SAAlgorithm implements IAlgorithm {
         return globalState;
     }
 
-    private CircularFifoQueue<Boolean> initializeLatestChanges() {
-        var lastHundredChanges = new CircularFifoQueue<Boolean>(QUEUE_SIZE);
-
-        for (var i = 0; i < QUEUE_SIZE; i++) {
-            lastHundredChanges.add(Boolean.TRUE);
-        }
-
-        return lastHundredChanges;
-    }
-
     private ArrayList<GraphNode> changeRandomlyState(Map<GraphNode, List<GraphEdge>> incidenceMap,
                                                      List<GraphNode> globalState) {
         var localState = new ArrayList<>(globalState);
@@ -160,16 +149,6 @@ public class SAAlgorithm implements IAlgorithm {
         localState.set(nodeToChangeIndex, endGraphNode);
 
         return localState;
-    }
-
-    private boolean shouldIterate(CircularFifoQueue<Boolean> lastHundredChanges) {
-        for (var i = 0; i < QUEUE_SIZE; i++) {
-            if (lastHundredChanges.get(i).equals(Boolean.TRUE)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private boolean isBetterStateFound(double acceptedFunctionValue, double localFunctionValue) {

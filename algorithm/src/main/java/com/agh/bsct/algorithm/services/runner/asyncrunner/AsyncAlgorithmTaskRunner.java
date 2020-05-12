@@ -14,9 +14,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class AsyncAlgorithmTaskRunner {
 
-    private static AtomicInteger THREAD_COUNT = new AtomicInteger(0);
+    private static final AtomicInteger THREAD_COUNT = new AtomicInteger(0);
 
-    private AlgorithmRunner algorithmRunner;
+    private final AlgorithmRunner algorithmRunner;
 
     @Autowired
     public AsyncAlgorithmTaskRunner(AlgorithmRunner algorithmRunner) {

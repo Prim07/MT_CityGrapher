@@ -14,6 +14,7 @@ public class AlgorithmTask {
     private final GraphDataDTO graphDataDTO;
     private final Integer numberOfResults;
     private final String algorithmType;
+    private final String cityName;
     private final Graph graph;
     private Integer calculatingShortestPathsProgress;
     private AlgorithmCalculationStatus status;
@@ -24,6 +25,7 @@ public class AlgorithmTask {
         this.graphDataDTO = algorithmOrderDTO.getGraphDataDTO();
         this.numberOfResults = algorithmOrderDTO.getNumberOfResults();
         this.algorithmType = algorithmOrderDTO.getAlgorithmType();
+        this.cityName = algorithmOrderDTO.getCityName();
         this.graph = graph;
         this.calculatingShortestPathsProgress = 0;
         this.status = AlgorithmCalculationStatus.NOT_STARTED;
@@ -43,6 +45,10 @@ public class AlgorithmTask {
 
     public String getAlgorithmType() {
         return algorithmType;
+    }
+
+    public String getCityName() {
+        return cityName;
     }
 
     public Graph getGraph() {

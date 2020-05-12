@@ -1,5 +1,6 @@
 package com.agh.bsct.algorithm.services.graph;
 
+import com.agh.bsct.algorithm.services.database.DatabaseService;
 import com.agh.bsct.algorithm.services.graphdata.GraphDataService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +11,13 @@ import java.util.*;
 @Service
 public class GraphService {
 
-    private GraphDataService graphDataService;
+    private final GraphDataService graphDataService;
+    private final DatabaseService databaseService;
 
     @Autowired
-    public GraphService(GraphDataService graphDataService) {
+    public GraphService(GraphDataService graphDataService, DatabaseService databaseService) {
         this.graphDataService = graphDataService;
+        this.databaseService = databaseService;
     }
 
     void replaceGraphWithItsLargestConnectedComponent(Graph graph) {
@@ -109,22 +112,29 @@ public class GraphService {
 
     }
 
-    Map<Long, Map<Long, Double>> calculateShortestPathsDistances(AlgorithmTask algorithmTask) {
+    ShortestPathsDistances calculateShortestPathsDistances(AlgorithmTask algorithmTask) {
+        String cityName = algorithmTask.getCityName();
+
+        if (databaseService.doesDataExist(cityName)) {
+            algorithmTask.setCalculatingShortestPathsProgress(100);
+            return databaseService.getShortestPathsDistances(cityName);
+        }
+
         var nodeToEdgesIncidenceMap = algorithmTask.getGraph().getIncidenceMap();
 
         var graphNodes = new ArrayList<>(nodeToEdgesIncidenceMap.keySet());
-        var shortestPathsDistances = new HashMap<Long, Map<Long, Double>>();
+        var distances = new HashMap<Long, Map<Long, Double>>();
 
         for (GraphNode i : graphNodes) {
             for (GraphNode j : graphNodes) {
                 if (i.equals(j)) {
-                    putValueToMap(i, j, 0.0, shortestPathsDistances);
+                    putValueToMap(i, j, 0.0, distances);
                 } else {
                     double edgeWeight = getEdgeWeight(i, j, nodeToEdgesIncidenceMap);
                     if (edgeWeight > 0) {
-                        putValueToMap(i, j, edgeWeight, shortestPathsDistances);
+                        putValueToMap(i, j, edgeWeight, distances);
                     } else {
-                        putValueToMap(i, j, Double.MAX_VALUE, shortestPathsDistances);
+                        putValueToMap(i, j, Double.MAX_VALUE, distances);
                     }
                 }
             }
@@ -144,19 +154,21 @@ public class GraphService {
                     Long jNodeId = j.getId();
                     Long kNodeId = k.getId();
 
-                    Double nodeIToJShortestDist = shortestPathsDistances.get(iNodeId).get(jNodeId);
-                    Double nodeIToKShortestDist = shortestPathsDistances.get(iNodeId).get(kNodeId);
-                    Double nodeKToJShortestDist = shortestPathsDistances.get(kNodeId).get(jNodeId);
+                    Double nodeIToJShortestDist = distances.get(iNodeId).get(jNodeId);
+                    Double nodeIToKShortestDist = distances.get(iNodeId).get(kNodeId);
+                    Double nodeKToJShortestDist = distances.get(kNodeId).get(jNodeId);
 
                     var iToKToJDist = nodeIToKShortestDist + nodeKToJShortestDist;
 
                     if (nodeIToJShortestDist > iToKToJDist) {
-                        shortestPathsDistances.get(iNodeId).put(jNodeId, iToKToJDist);
+                        distances.get(iNodeId).put(jNodeId, iToKToJDist);
                     }
                 }
             }
         }
 
+        ShortestPathsDistances shortestPathsDistances = new ShortestPathsDistances(distances);
+        databaseService.save(shortestPathsDistances, cityName);
         return shortestPathsDistances;
     }
 
@@ -164,7 +176,7 @@ public class GraphService {
         return (int) (kLoopIteration / graphNodesSize * 100);
     }
 
-    public Map<Long, Map<Long, Double>> getShortestPathsDistances(AlgorithmTask algorithmTask) {
+    public ShortestPathsDistances getShortestPathsDistances(AlgorithmTask algorithmTask) {
         replaceGraphWithItsLargestConnectedComponent(algorithmTask);
         return calculateShortestPathsDistances(algorithmTask);
     }

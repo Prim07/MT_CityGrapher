@@ -1,6 +1,7 @@
 package com.agh.bsct.algorithm.services.colours;
 
 import com.agh.bsct.algorithm.services.graph.GraphNode;
+import com.agh.bsct.algorithm.services.graph.ShortestPathsDistances;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,7 @@ import java.util.stream.IntStream;
 @Service
 public class ColoursService {
 
-    public void updateColoursInNodes(AlgorithmTask algorithmTask, Map<Long, Map<Long, Double>> shortestPathsDistances) {
+    public void updateColoursInNodes(AlgorithmTask algorithmTask, ShortestPathsDistances shortestPathsDistances) {
         if (!algorithmTask.getHospitals().isPresent()) {
             return;
         }
@@ -24,22 +25,13 @@ public class ColoursService {
                 closestNodes.forEach(closestNode -> closestNode.setNodeColour(hospital.getNodeColour())));
     }
 
-    /*public void updateColoursInEdges(AlgorithmTask algorithmTask) {
-        if (!algorithmTask.getHospitals().isPresent()) {
-            return;
-        }
-
-        algorithmTask.getGraph().getIncidenceMap().forEach((graphNode, graphEdges) ->
-                graphEdges.forEach(edge -> edge.setEdgeColour(graphNode.getNodeColour())));
-    }*/
-
     private HashMap<GraphNode, Set<GraphNode>> buildHospitalToClosestNodes(AlgorithmTask algorithmTask,
-                                                                           Map<Long, Map<Long, Double>> shortestPathsDistances,
+                                                                           ShortestPathsDistances shortestPathsDistances,
                                                                            List<GraphNode> hospitals) {
         var hospitalToClosestNodes = new HashMap<GraphNode, Set<GraphNode>>();
 
         for (GraphNode currentNode : algorithmTask.getGraph().getIncidenceMap().keySet()) {
-            Map<Long, Double> distancesFromCurrentNode = shortestPathsDistances.get(currentNode.getId());
+            Map<Long, Double> distancesFromCurrentNode = shortestPathsDistances.getDistances().get(currentNode.getId());
             GraphNode closestHospital = getClosestHospital(hospitals, distancesFromCurrentNode);
             updateHospitalToClosestNodes(hospitalToClosestNodes, currentNode, closestHospital);
         }
