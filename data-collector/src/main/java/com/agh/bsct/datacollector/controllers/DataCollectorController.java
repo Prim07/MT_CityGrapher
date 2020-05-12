@@ -54,4 +54,10 @@ public class DataCollectorController {
     public AlgorithmResultWithVisualizationDataDTO getTempAlgorithmResult(@PathVariable String taskId) {
         return getMappedAlgorithmResult(taskId);
     }
+
+    @GetMapping(DATA_COLLECTOR_PATH + "test")
+    @ResponseBody
+    public String test() {
+        return "Hello, world!";
+    }
 }
