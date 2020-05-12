@@ -1,1 +1,1 @@
-web: java -jar target/data-collector-1.0.jar
+web: java -jar data-collector/target/data-collector-1.0-SNAPSHOT
