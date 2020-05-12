@@ -1,2 +1,1 @@
 Main-Class: com.agh.bsct.algorithm.Algorithm
-
