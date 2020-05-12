@@ -55,7 +55,7 @@ public class DataCollectorController {
         return getMappedAlgorithmResult(taskId);
     }
 
-    @GetMapping(DATA_COLLECTOR_PATH + "test")
+    @GetMapping(DATA_COLLECTOR_PATH + "/test")
     @ResponseBody
     public String test() {
         return "Hello, world!";
