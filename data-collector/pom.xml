@@ -45,5 +45,38 @@
 
     </dependencies>
 
+    <build>
+        <plugins>
+            <!--<plugin>
+                &lt;!&ndash; Build an executable JAR &ndash;&gt;
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.agh.bsct.datacollector.DataCollector</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <configuration>
+                    <mainClass>com.agh.bsct.datacollector.DataCollector</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>
