@@ -112,7 +112,6 @@
                     <release>10</release>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
