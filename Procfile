@@ -1,1 +1,1 @@
-web: java -jar data-collector/target/data-collector-1.0-SNAPSHOT.jar
+web: java $JAVA_OPTS -jar data-collector/target/data-collector-1.0-SNAPSHOT.jar --server.port=$PORT $JAR_OPTS
