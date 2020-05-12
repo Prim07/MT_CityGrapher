@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT -jar target/*.jar
+web: java -jar target/data-collector-1.0-SNAPSHOT.jar
