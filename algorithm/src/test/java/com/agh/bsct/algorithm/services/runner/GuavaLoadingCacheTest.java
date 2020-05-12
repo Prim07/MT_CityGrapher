@@ -17,6 +17,9 @@ import org.junit.runner.RunWith;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @RunWith(JUnitPlatform.class)
 class GuavaLoadingCacheTest {
 
@@ -29,9 +32,15 @@ class GuavaLoadingCacheTest {
         var asyncTaskRepository = new AsyncTaskRepository();
         var graphDataMapper = new GraphDataMapper();
         algorithmResultCache = new GuavaLoadingCache(algorithmTaskRepository, asyncTaskRepository, graphDataMapper);
+        mockAlgorithmOrderDTO();
 
         GraphDataDTO graphDataDTO = new GraphDataDTO(Collections.emptyList(), Collections.emptyList());
         algorithmOrderDTO = new AlgorithmOrderDTO(2, graphDataDTO, "sa", algorithmOrderDTO.getCityName());
+    }
+
+    private void mockAlgorithmOrderDTO() {
+        algorithmOrderDTO = mock(AlgorithmOrderDTO.class);
+        when(algorithmOrderDTO.getCityName()).thenReturn("");
     }
 
     @Test

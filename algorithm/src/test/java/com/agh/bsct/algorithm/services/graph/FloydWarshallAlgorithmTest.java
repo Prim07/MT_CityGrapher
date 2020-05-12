@@ -37,7 +37,7 @@ class FloydWarshallAlgorithmTest {
         var graph = graphInitializer.initGraph(filename);
         graphService.replaceGraphWithItsLargestConnectedComponent(graph);
 
-        var algorithmTask = new AlgorithmTask(mock(String.class), mock(AlgorithmOrderDTO.class), graph);
+        var algorithmTask = new AlgorithmTask("", mock(AlgorithmOrderDTO.class), graph);
         var shortestPathsDistancesToCompare = graphService.calculateShortestPathsDistances(algorithmTask).getDistances();
 
         for (int i = 0; i < loopCount; i++) {
