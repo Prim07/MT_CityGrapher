@@ -1,1 +1,1 @@
-web: java -jar algorithm/target/algorithm-1.0-SNAPSHOT.jar
+web: java -jar algorithm/target/algorithm-1.0-SNAPSHOT.jar -Dserver.port=$PORT
