@@ -1,5 +1,6 @@
 package com.agh.bsct.api.models.graphdata;
 
+import com.agh.bsct.api.models.algorithmcreated.AlgorithmTaskIdDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +12,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GraphDataDTO {
+public class GraphDataDTO extends AlgorithmTaskIdDTO {
 
     @NotNull
     private List<EdgeDTO> edgeDTOS;

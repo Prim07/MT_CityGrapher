@@ -3,6 +3,7 @@ package com.agh.bsct.datacollector.services.city;
 import com.agh.bsct.api.models.algorithmcreated.AlgorithmTaskIdDTO;
 import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
 import com.agh.bsct.api.models.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
+import com.agh.bsct.api.models.algorithmresult.VisualizationDataDTO;
 import com.agh.bsct.api.models.taskinput.TaskInputDTO;
 import com.agh.bsct.datacollector.services.algorithm.boundary.AlgorithmService;
 import com.agh.bsct.datacollector.services.data.CityDataService;
@@ -32,7 +33,7 @@ public class OSMCityService {
         this.dataParser = dataParser;
     }
 
-    public AlgorithmTaskIdDTO getCityGraph(TaskInputDTO taskInputDTO) {
+    public AlgorithmTaskIdDTO createAlgorithmTask(TaskInputDTO taskInputDTO) {
         var cityDataDTO = cityDataService.getCityDataDTO(taskInputDTO.getCityName());
         var graphDataDTO = graphService.getGraphDataDTO(cityDataDTO);
         var algorithmType = taskInputDTO.getAlgorithmType();
@@ -44,6 +45,13 @@ public class OSMCityService {
                 .orElseGet(() -> new AlgorithmOrderDTO(numberOfResults, graphDataDTO, SA_ALGORITHM_SYMBOL, cityName));
 
         return algorithmService.run(algorithmOrderDTO);
+    }
+
+    public VisualizationDataDTO getVisualizationDataDTOData(String cityName) {
+        var cityDataDTO = cityDataService.getCityDataDTO(cityName);
+        var graphDataDTO = graphService.getGraphDataDTO(cityDataDTO);
+        var largestConnectedComponentGraphDataDTO = algorithmService.getLargestConnectedComponent(graphDataDTO);
+        return dataParser.getVisualizationDataDTOWithoutHospitals(largestConnectedComponentGraphDataDTO);
     }
 
     public AlgorithmResultWithVisualizationDataDTO getMappedAlgorithmResult(String taskId) {
