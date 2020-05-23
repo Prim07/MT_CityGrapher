@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
@@ -21,6 +22,9 @@ public class TaskInputDTO {
 
     @Nullable
     private String algorithmType;
+
+    @NotNull
+    private List<PrioritizedNodeDTO> prioritizedNodes;
 
     public Optional<String> getAlgorithmType() {
         return Optional.ofNullable(algorithmType);

@@ -37,11 +37,7 @@ public class DataCollectorController {
     @ResponseBody
     public ResponseEntity<AlgorithmCreatedResponseDTO> createTask(@RequestBody TaskInputDTO taskInputDTO) {
         AlgorithmTaskIdDTO algorithmTaskIdDTO = osmCityService.createAlgorithmTask(taskInputDTO);
-        AlgorithmCreatedResponseDTO algorithmCreatedResponseDTO = AlgorithmCreatedResponseDTO.builder()
-                .taskId(algorithmTaskIdDTO)
-                .uri(PathsConstants.DATA_COLLECTOR_ROOT_PATH + DATA_COLLECTOR_PATH
-                        + GET_TEMP_ALGORITHM_RESULT_PATH + algorithmTaskIdDTO.getTaskId())
-                .build();
+        AlgorithmCreatedResponseDTO algorithmCreatedResponseDTO = getAlgorithmCreatedResponseDTO(algorithmTaskIdDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(algorithmCreatedResponseDTO);
     }
@@ -69,5 +65,13 @@ public class DataCollectorController {
     @ResponseBody
     public String test() {
         return "Hello, world!";
+    }
+
+    private AlgorithmCreatedResponseDTO getAlgorithmCreatedResponseDTO(AlgorithmTaskIdDTO algorithmTaskIdDTO) {
+        return AlgorithmCreatedResponseDTO.builder()
+                .taskId(algorithmTaskIdDTO)
+                .uri(PathsConstants.DATA_COLLECTOR_ROOT_PATH + DATA_COLLECTOR_PATH
+                        + GET_TEMP_ALGORITHM_RESULT_PATH + algorithmTaskIdDTO.getTaskId())
+                .build();
     }
 }
