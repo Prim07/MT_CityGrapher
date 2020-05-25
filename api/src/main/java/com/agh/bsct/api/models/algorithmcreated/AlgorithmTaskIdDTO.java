@@ -1,6 +1,9 @@
 package com.agh.bsct.api.models.algorithmcreated;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -8,10 +11,9 @@ import lombok.*;
 @NoArgsConstructor
 public class AlgorithmTaskIdDTO {
 
-    @NonNull
     private String taskId;
 
-    public AlgorithmTaskIdDTO(@NonNull String taskId) {
+    public AlgorithmTaskIdDTO(String taskId) {
         this.taskId = taskId;
     }
 }

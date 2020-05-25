@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -30,13 +31,18 @@ public class DataParser {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AlgorithmResultWithVisualizationDataDTO parseToVisualizationDataDTO(AlgorithmResultDTO algorithmResultDTO) {
-        ArrayList<ObjectNode> jsonStreets =
+        var jsonStreets =
                 getEdgesParsedToObjectNodes(algorithmResultDTO.getGraphData(), algorithmResultDTO.getHospitals());
 
         return AlgorithmResultWithVisualizationDataDTO.builder()
                 .visualizationDataDTO(getVisualizationDataDTO(jsonStreets))
                 .algorithmResultDTO(algorithmResultDTO)
                 .build();
+    }
+
+    public VisualizationDataDTO getVisualizationDataDTOWithoutHospitals(GraphDataDTO graphDataDTO) {
+        var jsonStreets = getEdgesParsedToObjectNodes(graphDataDTO, Collections.emptyList());
+        return getVisualizationDataDTO(jsonStreets);
     }
 
     private VisualizationDataDTO getVisualizationDataDTO(ArrayList<ObjectNode> jsonStreets) {
@@ -78,9 +84,7 @@ public class DataParser {
             jsonNode.put(LONGITUDE_KEY, crossing.getGeographicalNodeDTO().getLon());
             jsonNode.put(IS_CROSSING_KEY, crossing.getGeographicalNodeDTO().isCrossing());
             jsonNode.put(IS_HOSPITAL_KEY, hospitals.contains(crossing.getGeographicalNodeDTO()));
-            if (crossing.getNodeColour() != null) {
-                jsonNode.put(COLOUR_KEY, getNodeColourAsObjectNode(crossing.getNodeColour()));
-            }
+            jsonNode.put(COLOUR_KEY, getNodeColourAsObjectNode(crossing.getNodeColour()));
             jsonNodes.add(jsonNode);
         }
 
@@ -88,11 +92,19 @@ public class DataParser {
     }
 
     private String getNodeColourAsObjectNode(Colour colour) {
+        if (isColourIncorrect(colour)) {
+            colour = Colour.createDefaultColour();
+        }
+
         ObjectNode colourObjectNode = objectMapper.createObjectNode();
         colourObjectNode.put("R", colour.getR());
         colourObjectNode.put("G", colour.getG());
         colourObjectNode.put("B", colour.getB());
         return colourObjectNode.toString();
+    }
+
+    private boolean isColourIncorrect(Colour colour) {
+        return colour == null || colour.getR() == null || colour.getG() == null || colour.getB() == null;
     }
 
     private NodeDTO getCrossingWithGivenId(Long nodeId, List<NodeDTO> nodeDTOS) {
