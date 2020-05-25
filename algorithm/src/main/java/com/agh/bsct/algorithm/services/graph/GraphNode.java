@@ -29,6 +29,10 @@ public class GraphNode {
         return id;
     }
 
+    public int getWeight() {
+        return weight;
+    }
+
     public Colour getNodeColour() {
         return nodeColour;
     }
