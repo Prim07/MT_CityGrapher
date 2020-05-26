@@ -9,20 +9,25 @@ import java.net.SocketTimeoutException;
 @Service
 public class QueryInterpreterService {
 
-    private Integer exceptionCounter = 3;
+    private static final int INIT_EXCEPTION_COUNTER_VALUE = 2;
+
+    private Integer exceptionCounter = INIT_EXCEPTION_COUNTER_VALUE;
 
     public OverpassQueryResult interpret(String query) {
         try {
-            return OverpassServiceProvider.get().interpreter(query).execute().body();
-
+            OverpassQueryResult result = OverpassServiceProvider.get().interpreter(query).execute().body();
+            exceptionCounter = INIT_EXCEPTION_COUNTER_VALUE;
+            return result;
         } catch (SocketTimeoutException e) {
             exceptionCounter--;
-            return (exceptionCounter > 0)
-                    ? interpret(query)
-                    : new OverpassQueryResult();
+            if (exceptionCounter > 0) {
+                return interpret(query);
+            }
+            exceptionCounter = INIT_EXCEPTION_COUNTER_VALUE;
+            return new OverpassQueryResult();
         } catch (Exception e) {
             e.printStackTrace();
-
+            exceptionCounter = INIT_EXCEPTION_COUNTER_VALUE;
             return new OverpassQueryResult();
         }
     }

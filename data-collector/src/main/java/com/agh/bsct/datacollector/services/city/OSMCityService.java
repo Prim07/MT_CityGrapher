@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
+import static com.agh.bsct.datacollector.services.dummylogger.DummyLogger.printMessage;
+
 @Service
 public class OSMCityService {
 
@@ -46,6 +48,7 @@ public class OSMCityService {
                 .map(typeValue -> new AlgorithmOrderDTO(numberOfResults, graphDataDTO, typeValue, cityName))
                 .orElseGet(() -> new AlgorithmOrderDTO(numberOfResults, graphDataDTO, SA_ALGORITHM_SYMBOL, cityName));
 
+        printMessage(taskInputDTO.getCityName() + ": Sending POST request to Algorithm");
         return algorithmService.run(algorithmOrderDTO);
     }
 

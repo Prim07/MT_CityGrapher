@@ -35,4 +35,10 @@ public enum OutputVerbosity {
      * timestamp and the user data of the user that last touched the object.
      */
     META,
+
+    /**
+     * Print count summary about the elements.
+     * This works similarly to META value
+     */
+    COUNT
 }
