@@ -10,8 +10,7 @@ import java.util.Map;
 @Service
 public class AlgorithmFunctionsService {
 
-    public double calculateFunctionValue(ShortestPathsDistances shortestPathsDistances,
-                                         List<GraphNode> globalState) {
+    public double calculateFunctionValue(ShortestPathsDistances shortestPathsDistances, List<GraphNode> globalState) {
         var distancesToClosestHospitalsSum = 0.0;
         var longestDistance = shortestPathsDistances.getLongestDistance();
 
@@ -23,13 +22,13 @@ public class AlgorithmFunctionsService {
         return distancesToClosestHospitalsSum;
     }
 
-    private double getDistanceToClosestHospital(Map<Long, Double> currentNodeShortestPathsDistance,
+    private double getDistanceToClosestHospital(Map<Long, Double> currentNodeShortestPathsDistances,
                                                 List<GraphNode> globalState,
                                                 double longestDistance) {
         var distanceToClosestHospital = Double.MAX_VALUE;
 
         for (var currentGlobalState : globalState) {
-            var distanceToHospital = currentNodeShortestPathsDistance.get(currentGlobalState.getId());
+            var distanceToHospital = currentNodeShortestPathsDistances.get(currentGlobalState.getId());
             var weightedDistanceToHospital = getWeightedDistanceToHospital(distanceToHospital,
                     currentGlobalState.getWeight(), longestDistance);
 
