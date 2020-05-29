@@ -15,21 +15,30 @@ public class AlgorithmFunctionsService {
         var distancesToClosestHospitalsSum = 0.0;
         var longestDistance = shortestPathsDistances.getLongestDistance();
 
-        for (Map<Long, Double> currentNodeShortestPathsDistance : shortestPathsDistances.getDistances().values()) {
-            var distanceToClosestHospitals = Double.MAX_VALUE;
-            for (var currentGlobalStateNodeId : globalState) {
-                var distanceToHospital = currentNodeShortestPathsDistance.get(currentGlobalStateNodeId.getId());
-                var weightedDistanceToHospital = getWeightedDistanceToHospital(distanceToHospital,
-                        currentGlobalStateNodeId.getWeight(), longestDistance);
-
-                if (weightedDistanceToHospital < distanceToClosestHospitals) {
-                    distanceToClosestHospitals = weightedDistanceToHospital;
-                }
-            }
-            distancesToClosestHospitalsSum += distanceToClosestHospitals;
+        for (Map<Long, Double> currentNodeShortestPathsDistances : shortestPathsDistances.getDistances().values()) {
+            distancesToClosestHospitalsSum +=
+                    getDistanceToClosestHospital(currentNodeShortestPathsDistances, globalState, longestDistance);
         }
 
         return distancesToClosestHospitalsSum;
+    }
+
+    private double getDistanceToClosestHospital(Map<Long, Double> currentNodeShortestPathsDistance,
+                                                List<GraphNode> globalState,
+                                                double longestDistance) {
+        var distanceToClosestHospital = Double.MAX_VALUE;
+
+        for (var currentGlobalState : globalState) {
+            var distanceToHospital = currentNodeShortestPathsDistance.get(currentGlobalState.getId());
+            var weightedDistanceToHospital = getWeightedDistanceToHospital(distanceToHospital,
+                    currentGlobalState.getWeight(), longestDistance);
+
+            if (weightedDistanceToHospital < distanceToClosestHospital) {
+                distanceToClosestHospital = weightedDistanceToHospital;
+            }
+        }
+
+        return distanceToClosestHospital;
     }
 
     private double getWeightedDistanceToHospital(double distanceToHospital, int weight, double longestDistance) {
