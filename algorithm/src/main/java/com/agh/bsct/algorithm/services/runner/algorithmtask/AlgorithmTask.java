@@ -19,6 +19,7 @@ public class AlgorithmTask {
     private Integer calculatingShortestPathsProgress;
     private AlgorithmCalculationStatus status;
     private List<GraphNode> hospitals;
+    private double fitnessScore;
 
     public AlgorithmTask(String taskId, AlgorithmOrderDTO algorithmOrderDTO, Graph graph) {
         this.taskId = taskId;
@@ -29,6 +30,7 @@ public class AlgorithmTask {
         this.graph = graph;
         this.calculatingShortestPathsProgress = 0;
         this.status = AlgorithmCalculationStatus.NOT_STARTED;
+        this.fitnessScore = Double.MAX_VALUE;
     }
 
     public String getTaskId() {
@@ -79,4 +81,11 @@ public class AlgorithmTask {
         this.hospitals = hospitals;
     }
 
+    public double getFitnessScore() {
+        return fitnessScore;
+    }
+
+    public void setFitnessScore(double fitnessScore) {
+        this.fitnessScore = fitnessScore;
+    }
 }

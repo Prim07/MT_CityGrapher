@@ -1,4 +1,4 @@
-package com.agh.bsct.algorithm.algorithms.AAlgorithm;
+package com.agh.bsct.algorithm.algorithms.GAlgorithm;
 
 import com.agh.bsct.algorithm.services.algorithms.AlgorithmFunctionsService;
 import com.agh.bsct.algorithm.services.graph.GraphNode;

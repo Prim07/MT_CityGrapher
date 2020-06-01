@@ -2,7 +2,7 @@ package com.agh.bsct.datacollector.services.city;
 
 import com.agh.bsct.api.models.algorithmcreated.AlgorithmTaskIdDTO;
 import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
-import com.agh.bsct.api.models.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
+import com.agh.bsct.api.models.algorithmresult.FinalAlgorithmResultDTO;
 import com.agh.bsct.api.models.algorithmresult.VisualizationDataDTO;
 import com.agh.bsct.api.models.taskinput.TaskInputDTO;
 import com.agh.bsct.datacollector.services.algorithm.boundary.AlgorithmService;
@@ -56,7 +56,7 @@ public class OSMCityService {
         return dataParser.getVisualizationDataDTOWithoutHospitals(largestConnectedComponentGraphDataDTO);
     }
 
-    public AlgorithmResultWithVisualizationDataDTO getMappedAlgorithmResult(String taskId) {
+    public FinalAlgorithmResultDTO getMappedAlgorithmResult(String taskId) {
         return dataParser.parseToVisualizationDataDTO(algorithmService.getResult(taskId));
     }
 }

@@ -3,7 +3,7 @@ package com.agh.bsct.datacollector.controllers;
 
 import com.agh.bsct.api.models.algorithmcreated.AlgorithmCreatedResponseDTO;
 import com.agh.bsct.api.models.algorithmcreated.AlgorithmTaskIdDTO;
-import com.agh.bsct.api.models.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
+import com.agh.bsct.api.models.algorithmresult.FinalAlgorithmResultDTO;
 import com.agh.bsct.api.models.algorithmresult.VisualizationDataDTO;
 import com.agh.bsct.api.models.taskinput.TaskInputDTO;
 import com.agh.bsct.datacollector.controllers.config.PathsConstants;
@@ -51,13 +51,13 @@ public class DataCollectorController {
 
     @GetMapping(DATA_COLLECTOR_PATH + GET_ALGORITHM_RESULT_PATH + TASK_ID_URI_PARAM)
     @ResponseBody
-    public AlgorithmResultWithVisualizationDataDTO getMappedAlgorithmResult(@PathVariable String taskId) {
+    public FinalAlgorithmResultDTO getMappedAlgorithmResult(@PathVariable String taskId) {
         return osmCityService.getMappedAlgorithmResult(taskId);
     }
 
     @GetMapping(DATA_COLLECTOR_PATH + GET_TEMP_ALGORITHM_RESULT_PATH + TASK_ID_URI_PARAM)
     @ResponseBody
-    public AlgorithmResultWithVisualizationDataDTO getTempAlgorithmResult(@PathVariable String taskId) {
+    public FinalAlgorithmResultDTO getTempAlgorithmResult(@PathVariable String taskId) {
         return getMappedAlgorithmResult(taskId);
     }
 

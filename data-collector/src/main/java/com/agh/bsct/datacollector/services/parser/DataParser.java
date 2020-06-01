@@ -1,7 +1,8 @@
 package com.agh.bsct.datacollector.services.parser;
 
 import com.agh.bsct.api.models.algorithmresult.AlgorithmResultDTO;
-import com.agh.bsct.api.models.algorithmresult.AlgorithmResultWithVisualizationDataDTO;
+import com.agh.bsct.api.models.algorithmresult.AlgorithmResultInfoDTO;
+import com.agh.bsct.api.models.algorithmresult.FinalAlgorithmResultDTO;
 import com.agh.bsct.api.models.algorithmresult.VisualizationDataDTO;
 import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
 import com.agh.bsct.api.models.graphdata.Colour;
@@ -30,13 +31,14 @@ public class DataParser {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public AlgorithmResultWithVisualizationDataDTO parseToVisualizationDataDTO(AlgorithmResultDTO algorithmResultDTO) {
+    public FinalAlgorithmResultDTO parseToVisualizationDataDTO(AlgorithmResultDTO algorithmResultDTO) {
         var jsonStreets =
                 getEdgesParsedToObjectNodes(algorithmResultDTO.getGraphData(), algorithmResultDTO.getHospitals());
 
-        return AlgorithmResultWithVisualizationDataDTO.builder()
+        return FinalAlgorithmResultDTO.builder()
                 .visualizationDataDTO(getVisualizationDataDTO(jsonStreets))
                 .algorithmResultDTO(algorithmResultDTO)
+                .algorithmResultInfoDTO(createAlgorithmResultInfoDTO(algorithmResultDTO))
                 .build();
     }
 
@@ -114,4 +116,14 @@ public class DataParser {
                 .orElseThrow(() -> new IllegalStateException("Cannot find GraphNode with given taskId"));
     }
 
+    private AlgorithmResultInfoDTO createAlgorithmResultInfoDTO(AlgorithmResultDTO algorithmResultDTO) {
+        var graphDataDTO = algorithmResultDTO.getGraphData();
+
+        return AlgorithmResultInfoDTO.builder()
+                .numberOfNodes(graphDataDTO.getNodeDTOS().stream()
+                        .filter(nodeDTO -> nodeDTO.getGeographicalNodeDTO().isCrossing()).count())
+                .numberOfEdges(graphDataDTO.getEdgeDTOS().size())
+                .fitnessScore(algorithmResultDTO.getFitnessScore())
+                .build();
+    }
 }

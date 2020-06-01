@@ -83,6 +83,7 @@ public class SAAlgorithm implements IAlgorithm {
                     bestFunctionValue = acceptedFunctionValue;
                     bestState = acceptedState;
                     updateHospitalsInAlgorithmTask(algorithmTask, bestState);
+                    updateFitnessScoreInAlgorithmTask(algorithmTask, acceptedFunctionValue);
                 }
             } else {
                 var worseResultAcceptanceProbability = random.nextDouble();
@@ -92,6 +93,7 @@ public class SAAlgorithm implements IAlgorithm {
                     acceptedState = localState;
                     acceptedFunctionValue = localFunctionValue;
                     updateHospitalsInAlgorithmTask(algorithmTask, bestState);
+                    updateFitnessScoreInAlgorithmTask(algorithmTask, acceptedFunctionValue);
                 } else {
                     latestChangesService.add(Boolean.FALSE);
                 }
@@ -108,6 +110,7 @@ public class SAAlgorithm implements IAlgorithm {
         gnuplotOutputWriter.closeResources();
 
         updateHospitalsInAlgorithmTask(algorithmTask, bestState);
+        updateFitnessScoreInAlgorithmTask(algorithmTask, acceptedFunctionValue);
         coloursService.updateColoursInNodes(algorithmTask, shortestPathsDistances);
 
         printMessage("SA Best state value: " + bestFunctionValue);
@@ -165,6 +168,10 @@ public class SAAlgorithm implements IAlgorithm {
 
     private void updateHospitalsInAlgorithmTask(AlgorithmTask algorithmTask, List<GraphNode> bestState) {
         algorithmTask.setHospitals(bestState);
+    }
+
+    private void updateFitnessScoreInAlgorithmTask(AlgorithmTask algorithmTask, double fitnessScore) {
+        algorithmTask.setFitnessScore(fitnessScore);
     }
 
 }
