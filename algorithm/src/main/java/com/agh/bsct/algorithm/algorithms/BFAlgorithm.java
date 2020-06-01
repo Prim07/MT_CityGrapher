@@ -87,6 +87,7 @@ public class BFAlgorithm implements IAlgorithm {
                 bestFunctionValue = acceptedFunctionValue;
                 bestState = acceptedState;
                 updateHospitalsInAlgorithmTask(algorithmTask, bestState);
+                updateFitnessScoreInAlgorithmTask(algorithmTask, bestFunctionValue);
             }
         }
 
@@ -108,6 +109,7 @@ public class BFAlgorithm implements IAlgorithm {
                     bestFunctionValue = acceptedFunctionValue;
                     bestState = acceptedState;
                     updateHospitalsInAlgorithmTask(algorithmTask, bestState);
+                    updateFitnessScoreInAlgorithmTask(algorithmTask, bestFunctionValue);
                 }
             }
 
@@ -132,6 +134,7 @@ public class BFAlgorithm implements IAlgorithm {
                         bestFunctionValue = acceptedFunctionValue;
                         bestState = acceptedState;
                         updateHospitalsInAlgorithmTask(algorithmTask, bestState);
+                        updateFitnessScoreInAlgorithmTask(algorithmTask, bestFunctionValue);
                     }
                 }
 
@@ -143,6 +146,10 @@ public class BFAlgorithm implements IAlgorithm {
 
     private void updateHospitalsInAlgorithmTask(AlgorithmTask algorithmTask, List<GraphNode> bestState) {
         algorithmTask.setHospitals(bestState);
+    }
+
+    private void updateFitnessScoreInAlgorithmTask(AlgorithmTask algorithmTask, double fitnessScore) {
+        algorithmTask.setFitnessScore(fitnessScore);
     }
 
 }

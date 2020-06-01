@@ -1,4 +1,4 @@
-package com.agh.bsct.algorithm.algorithms.AAlgorithm;
+package com.agh.bsct.algorithm.algorithms.GAlgorithm;
 
 class CrossoveredChildren {
 
