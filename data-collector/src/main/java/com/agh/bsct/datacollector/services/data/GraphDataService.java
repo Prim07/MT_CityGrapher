@@ -90,7 +90,6 @@ public class GraphDataService {
 
     private List<NodeDTO> getEquallyWeightedNodes(List<GeographicalNodeDTO> nodes) {
         return nodes.stream()
-                .filter(GeographicalNodeDTO::isCrossing)
                 .map(geographicalNodeDTO -> new NodeDTO(geographicalNodeDTO, DEFAULT_NODE_WEIGHT))
                 .collect(Collectors.toList());
     }

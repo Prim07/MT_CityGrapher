@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DataParser {
@@ -36,9 +35,9 @@ public class DataParser {
         return getVisualizationDataDTO(streetVisualizationDTOs);
     }
 
-    private VisualizationDataDTO getVisualizationDataDTO(List<StreetVisualizationDTO> jsonStreets) {
+    private VisualizationDataDTO getVisualizationDataDTO(List<StreetVisualizationDTO> streetVisualizationDTOs) {
         return VisualizationDataDTO.builder()
-                .edges(jsonStreets)
+                .edges(streetVisualizationDTOs)
                 .build();
     }
 
@@ -69,20 +68,14 @@ public class DataParser {
 
         for (Long nodeId : streetNodesIds) {
             var crossing = getCrossingWithGivenId(nodeId, nodeDTOS);
-
-            if (!crossing.isPresent()) {
-                continue;
-            }
-
-            var crossingGeographicalNodeDTO = crossing.get().getGeographicalNodeDTO();
-
+            var crossingGeographicalNodeDTO = crossing.getGeographicalNodeDTO();
             nodeVisualizationDTOs.add(NodeVisualizationDTO.builder()
                     .id(crossingGeographicalNodeDTO.getId())
                     .lat(crossingGeographicalNodeDTO.getLat())
                     .lon(crossingGeographicalNodeDTO.getLon())
                     .isCrossing(crossingGeographicalNodeDTO.isCrossing())
                     .isHospital(hospitals.contains(crossingGeographicalNodeDTO))
-                    .colour(getColourAsJson(crossing.get().getNodeColour()))
+                    .colour(getColourAsJson(crossing.getNodeColour()))
                     .build());
         }
 
@@ -105,10 +98,11 @@ public class DataParser {
         return colour == null || colour.getR() == null || colour.getG() == null || colour.getB() == null;
     }
 
-    private Optional<NodeDTO> getCrossingWithGivenId(Long nodeId, List<NodeDTO> nodeDTOS) {
+    private NodeDTO getCrossingWithGivenId(Long nodeId, List<NodeDTO> nodeDTOS) {
         return nodeDTOS.stream()
                 .filter(nodeDTO -> nodeDTO.getGeographicalNodeDTO().getId().equals(nodeId))
-                .findAny();
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("Cannot find GraphNode with given id: " + nodeId));
     }
 
     private AlgorithmResultInfoDTO createAlgorithmResultInfoDTO(AlgorithmResultDTO algorithmResultDTO,
