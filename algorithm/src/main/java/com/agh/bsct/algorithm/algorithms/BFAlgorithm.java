@@ -83,7 +83,7 @@ public class BFAlgorithm implements IAlgorithm {
             List<GraphNode> acceptedState = Collections.singletonList(node);
             var acceptedFunctionValue = algorithmFunctionsService.calculateFunctionValue(
                     shortestPathsDistances, acceptedState);
-            if (acceptedFunctionValue < bestFunctionValue) {
+            if (algorithmFunctionsService.isFunctionValueBetter(acceptedFunctionValue, bestFunctionValue)) {
                 bestFunctionValue = acceptedFunctionValue;
                 bestState = acceptedState;
                 updateHospitalsInAlgorithmTask(algorithmTask, bestState);
@@ -105,7 +105,7 @@ public class BFAlgorithm implements IAlgorithm {
                 List<GraphNode> acceptedState = Arrays.asList(node1, node2);
                 var acceptedFunctionValue =
                         algorithmFunctionsService.calculateFunctionValue(shortestPathsDistances, acceptedState);
-                if (acceptedFunctionValue < bestFunctionValue) {
+                if (algorithmFunctionsService.isFunctionValueBetter(acceptedFunctionValue, bestFunctionValue)) {
                     bestFunctionValue = acceptedFunctionValue;
                     bestState = acceptedState;
                     updateHospitalsInAlgorithmTask(algorithmTask, bestState);
@@ -130,7 +130,7 @@ public class BFAlgorithm implements IAlgorithm {
                     List<GraphNode> acceptedState = Arrays.asList(node1, node2, node3);
                     var acceptedFunctionValue =
                             algorithmFunctionsService.calculateFunctionValue(shortestPathsDistances, acceptedState);
-                    if (acceptedFunctionValue < bestFunctionValue) {
+                    if (algorithmFunctionsService.isFunctionValueBetter(acceptedFunctionValue, bestFunctionValue)) {
                         bestFunctionValue = acceptedFunctionValue;
                         bestState = acceptedState;
                         updateHospitalsInAlgorithmTask(algorithmTask, bestState);

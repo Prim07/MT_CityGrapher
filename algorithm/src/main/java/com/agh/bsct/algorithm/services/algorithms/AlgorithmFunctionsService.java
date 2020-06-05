@@ -10,6 +10,8 @@ import java.util.Map;
 @Service
 public class AlgorithmFunctionsService {
 
+    private static final double FITNESS_SCORE_ROUNDING_PRECISION = 0.001;
+
     public double calculateFunctionValue(ShortestPathsDistances shortestPathsDistances, List<GraphNode> globalState) {
         var distancesToClosestHospitalsSum = 0.0;
         var longestDistance = shortestPathsDistances.getLongestDistance();
@@ -20,6 +22,11 @@ public class AlgorithmFunctionsService {
         }
 
         return distancesToClosestHospitalsSum;
+    }
+
+    public boolean isFunctionValueBetter(double candidateFunctionValue, double currentBestFunctionValue) {
+        return Math.abs(candidateFunctionValue - currentBestFunctionValue) > FITNESS_SCORE_ROUNDING_PRECISION
+                && candidateFunctionValue < currentBestFunctionValue;
     }
 
     private double getDistanceToClosestHospital(Map<Long, Double> currentNodeShortestPathsDistances,
@@ -40,7 +47,15 @@ public class AlgorithmFunctionsService {
         return distanceToClosestHospital;
     }
 
-    private double getWeightedDistanceToHospital(double distanceToHospital, int weight, double longestDistance) {
-        return distanceToHospital / (weight * longestDistance);
+    private double getWeightedDistanceToHospital(double distanceToHospital, double weight, double longestDistance) {
+        if (isNodeOnTheEdgeOfTheCityOrNotConsidered(weight)) {
+            return longestDistance * 100;
+        }
+
+        return (distanceToHospital / longestDistance) / weight;
+    }
+
+    private boolean isNodeOnTheEdgeOfTheCityOrNotConsidered(double abs) {
+        return abs < 0;
     }
 }

@@ -1,6 +1,5 @@
 package com.agh.bsct.api.models.algorithmresult;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,6 +9,8 @@ import java.util.List;
 @Getter
 @Builder
 public class VisualizationDataDTO {
+
     @NotNull
-    List<ObjectNode> edges;
+    List<StreetVisualizationDTO> edges;
+
 }

@@ -37,11 +37,11 @@ public class SAAlgorithm implements IAlgorithm {
     private final Random random;
 
     @Autowired
-    public SAAlgorithm(AlgorithmFunctionsService functionsService,
+    public SAAlgorithm(AlgorithmFunctionsService algorithmFunctionsService,
                        GraphService graphService,
                        ColoursService coloursService,
                        GnuplotOutputWriter gnuplotOutputWriter) {
-        this.functionsService = functionsService;
+        this.functionsService = algorithmFunctionsService;
         this.graphService = graphService;
         this.coloursService = coloursService;
         this.gnuplotOutputWriter = gnuplotOutputWriter;
@@ -155,11 +155,11 @@ public class SAAlgorithm implements IAlgorithm {
     }
 
     private boolean isBetterStateFound(double acceptedFunctionValue, double localFunctionValue) {
-        return localFunctionValue < acceptedFunctionValue;
+        return functionsService.isFunctionValueBetter(localFunctionValue, acceptedFunctionValue);
     }
 
     private boolean isAcceptedStateBetterThanBestState(double acceptedFunctionValue, double bestFunctionValue) {
-        return acceptedFunctionValue < bestFunctionValue;
+        return functionsService.isFunctionValueBetter(acceptedFunctionValue, bestFunctionValue);
     }
 
     private boolean shouldWorseChangeBeApplied(double worseResultAcceptanceProbability, double acceptanceProbability) {

@@ -115,8 +115,7 @@ public class Population {
         var candidateFitnessScore = currentBestIndividual.getFitnessScore();
         var bestFitnessScore = globalBestIndividual.getFitnessScore();
 
-        return Math.abs(candidateFitnessScore - bestFitnessScore) > FITNESS_SCORE_ROUNDING_PRECISION
-                && candidateFitnessScore < bestFitnessScore;
+        return algorithmFunctionsService.isFunctionValueBetter(candidateFitnessScore, bestFitnessScore);
     }
 
     public void chooseParentsPopulation() {

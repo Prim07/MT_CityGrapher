@@ -1,21 +1,23 @@
 package com.agh.bsct.api.models.taskinput;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Getter
-@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class PrioritizedNodeDTO {
 
     @NotNull
-    private Long priorityValue;
+    private Long geographicalNodeId;
 
     @NotNull
-    private List<Long> geographicalNodeDTOIds;
+    private Double manualWeight;
+
+    @NotNull
+    private Double voronoiWeight;
 
 }

@@ -6,12 +6,12 @@ import com.agh.bsct.api.models.citydata.StreetDTO;
 import com.agh.bsct.api.models.graphdata.EdgeDTO;
 import com.agh.bsct.api.models.graphdata.GraphDataDTO;
 import com.agh.bsct.api.models.graphdata.NodeDTO;
+import com.agh.bsct.api.models.taskinput.NodesPrioritiesDTO;
 import com.agh.bsct.api.models.taskinput.PrioritizedNodeDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.*;
@@ -20,11 +20,12 @@ import static java.lang.Math.*;
 public class GraphDataService {
 
     private static final int EARTH_RADIUS = 6372800;
-    private static final int DEFAULT_NODE_WEIGHT = 1;
+    private static final double DEFAULT_NOT_CROSSING_NODE_WEIGHT = 0;
+    private static final double DEFAULT_NODE_WEIGHT = 1;
 
-    public GraphDataDTO getGraphDataDTO(CityDataDTO cityData, List<PrioritizedNodeDTO> prioritizedNodes) {
+    public GraphDataDTO getGraphDataDTO(CityDataDTO cityData, NodesPrioritiesDTO nodesPriorities) {
         List<EdgeDTO> edges = calculateEdgeWeights(cityData.getStreets(), cityData.getGeographicalNodes());
-        List<NodeDTO> crossings = calculateNodeWeights(cityData.getGeographicalNodes(), prioritizedNodes);
+        List<NodeDTO> crossings = calculateNodeWeights(cityData.getGeographicalNodes(), nodesPriorities);
         return new GraphDataDTO(edges, crossings);
     }
 
@@ -70,36 +71,144 @@ public class GraphDataService {
         return nodes.stream()
                 .filter(node -> node.getId().equals(nodeId))
                 .findAny()
-                .orElseThrow(() -> new IllegalStateException("Cannot find GraphNode with given taskId: " + nodeId));
+                .orElseThrow(() -> new IllegalStateException("Cannot find GraphNode with given id: " + nodeId));
     }
 
     private List<NodeDTO> calculateNodeWeights(List<GeographicalNodeDTO> nodes,
-                                               List<PrioritizedNodeDTO> prioritizedNodes) {
+                                               NodesPrioritiesDTO nodesPrioritiesDTO) {
+        if (areNoneOfWeightsUsed(nodesPrioritiesDTO)) {
+            return getEquallyWeightedNodes(nodes);
+        }
+
+        removeNotCrossingNodes(nodes, nodesPrioritiesDTO);
+        double normalizedValue = getNormalizedValue(nodesPrioritiesDTO);
+
         return nodes.stream()
-                .map(node -> getCrossingWithNodeWeight(node, prioritizedNodes))
+                .map(node -> getNodeWithCalculatedWeight(node, nodesPrioritiesDTO, normalizedValue))
                 .collect(Collectors.toList());
     }
 
-    private NodeDTO getCrossingWithNodeWeight(GeographicalNodeDTO node, List<PrioritizedNodeDTO> prioritizedNodes) {
-        AtomicInteger nodeWeight = new AtomicInteger(0);
+    private List<NodeDTO> getEquallyWeightedNodes(List<GeographicalNodeDTO> nodes) {
+        return nodes.stream()
+                .filter(GeographicalNodeDTO::isCrossing)
+                .map(geographicalNodeDTO -> new NodeDTO(geographicalNodeDTO, DEFAULT_NODE_WEIGHT))
+                .collect(Collectors.toList());
+    }
 
-        prioritizedNodes.stream()
-                .filter(prioritizedNodeDTO -> isNodeInPrioritizedGroup(node, prioritizedNodeDTO))
-                .forEach(prioritizedNodeDTO -> nodeWeight.addAndGet(prioritizedNodeDTO.getPriorityValue().intValue()));
+    private void removeNotCrossingNodes(List<GeographicalNodeDTO> nodes, NodesPrioritiesDTO nodesPrioritiesDTO) {
+        List<PrioritizedNodeDTO> prioritizedCrossingNodes = nodesPrioritiesDTO.getPrioritizedNodes().stream()
+                .filter(prioritizedNodeDTO -> isPrioritizedNodeCrossing(nodes, prioritizedNodeDTO))
+                .collect(Collectors.toList());
+        nodesPrioritiesDTO.setPrioritizedNodes(prioritizedCrossingNodes);
+    }
 
-        if (isNotNodePrioritized(nodeWeight)) {
-            nodeWeight.set(DEFAULT_NODE_WEIGHT);
+    private boolean isPrioritizedNodeCrossing(List<GeographicalNodeDTO> nodes, PrioritizedNodeDTO prioritizedNodeDTO) {
+        return nodes.stream()
+                .filter(node -> node.getId().equals(prioritizedNodeDTO.getGeographicalNodeId()))
+                .findAny()
+                .map(GeographicalNodeDTO::isCrossing)
+                .orElse(false);
+    }
+
+    private double getNormalizedValue(NodesPrioritiesDTO nodesPrioritiesDTO) {
+        if (areNoneOfWeightsUsed(nodesPrioritiesDTO)) {
+            return 1;
         }
 
-        return new NodeDTO(node, nodeWeight.get());
+        List<PrioritizedNodeDTO> prioritizedNodes = nodesPrioritiesDTO.getPrioritizedNodes();
+
+        if (areOnlyManualWeightsUsed(nodesPrioritiesDTO)) {
+            return calculateSumOfManualWeights(prioritizedNodes);
+        }
+
+        if (areOnlyVoronoiWeightsUsed(nodesPrioritiesDTO)) {
+            return calculateSumOfVoronoiWeights(prioritizedNodes);
+        }
+
+        return calculateSumOfBothWeights(prioritizedNodes);
     }
 
-    private boolean isNotNodePrioritized(AtomicInteger nodeWeight) {
-        return nodeWeight.get() == 0;
+    private NodeDTO getNodeWithCalculatedWeight(GeographicalNodeDTO node, NodesPrioritiesDTO nodesPrioritiesDTO,
+                                                double normalizedValue) {
+        List<PrioritizedNodeDTO> prioritizedNodes = nodesPrioritiesDTO.getPrioritizedNodes();
+
+        if (!node.isCrossing()) {
+            return new NodeDTO(node, DEFAULT_NOT_CROSSING_NODE_WEIGHT);
+        }
+
+        var prioritizedNode = getPrioritizedNode(node, prioritizedNodes);
+        double weight = calculateWeight(nodesPrioritiesDTO, prioritizedNode, normalizedValue);
+
+        return new NodeDTO(node, weight);
     }
 
-    private boolean isNodeInPrioritizedGroup(GeographicalNodeDTO node, PrioritizedNodeDTO prioritizedNodeDTO) {
-        return prioritizedNodeDTO.getGeographicalNodeDTOIds().stream()
-                .anyMatch(id -> node.getId().equals(id));
+    private double calculateWeight(NodesPrioritiesDTO nodesPrioritiesDTO,
+                                   PrioritizedNodeDTO prioritizedNode,
+                                   double normalizedValue) {
+        if (areNoneOfWeightsUsed(nodesPrioritiesDTO)) {
+            return DEFAULT_NODE_WEIGHT;
+        }
+
+        if (areOnlyManualWeightsUsed(nodesPrioritiesDTO)) {
+            return prioritizedNode.getManualWeight() / normalizedValue;
+        }
+
+        if (areOnlyVoronoiWeightsUsed(nodesPrioritiesDTO)) {
+            return prioritizedNode.getVoronoiWeight() / normalizedValue;
+        }
+
+        return prioritizedNode.getManualWeight() * prioritizedNode.getVoronoiWeight() / normalizedValue;
+    }
+
+    private boolean areNoneOfWeightsUsed(NodesPrioritiesDTO nodesPrioritiesDTO) {
+        return !nodesPrioritiesDTO.areManualWeightsUsed() && !nodesPrioritiesDTO.areVoronoiWeightsUsed();
+    }
+
+    private boolean areOnlyManualWeightsUsed(NodesPrioritiesDTO nodesPrioritiesDTO) {
+        return nodesPrioritiesDTO.areManualWeightsUsed() && !nodesPrioritiesDTO.areVoronoiWeightsUsed();
+    }
+
+    private double calculateSumOfManualWeights(List<PrioritizedNodeDTO> prioritizedNodes) {
+        return prioritizedNodes.stream()
+                .mapToDouble(PrioritizedNodeDTO::getManualWeight)
+                .sum();
+    }
+
+    private boolean areOnlyVoronoiWeightsUsed(NodesPrioritiesDTO nodesPrioritiesDTO) {
+        return !nodesPrioritiesDTO.areManualWeightsUsed() && nodesPrioritiesDTO.areVoronoiWeightsUsed();
+    }
+
+    private double calculateSumOfVoronoiWeights(List<PrioritizedNodeDTO> prioritizedNodes) {
+        return prioritizedNodes.stream()
+                .mapToDouble(PrioritizedNodeDTO::getVoronoiWeight)
+                .filter(this::isPositive)
+                .sum();
+    }
+
+    private double calculateSumOfBothWeights(List<PrioritizedNodeDTO> prioritizedNodes) {
+        return prioritizedNodes.stream()
+                .map(this::multiplyBothWeights)
+                .mapToDouble(Double::doubleValue)
+                .filter(this::isPositive)
+                .sum();
+    }
+
+    private boolean isPositive(double v) {
+        return v > 0;
+    }
+
+    private double multiplyBothWeights(PrioritizedNodeDTO prioritizedNodeDTO) {
+        return prioritizedNodeDTO.getManualWeight() * prioritizedNodeDTO.getVoronoiWeight();
+    }
+
+    private PrioritizedNodeDTO getPrioritizedNode(GeographicalNodeDTO node, List<PrioritizedNodeDTO> prioritizedNodes) {
+        return prioritizedNodes.stream()
+                .filter(prioritizedNodeDTO -> prioritizedNodeDTO.getGeographicalNodeId().equals(node.getId()))
+                .findAny()
+                .orElse(getPrioritizedNodeFromOutsideLargestConnectedComponent(node.getId()));
+    }
+
+    private PrioritizedNodeDTO getPrioritizedNodeFromOutsideLargestConnectedComponent(Long id) {
+        return new PrioritizedNodeDTO(id, 0D, 0D);
     }
 }
