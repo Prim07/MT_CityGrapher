@@ -45,9 +45,15 @@ public class Population {
 
     @SuppressWarnings("ConstantConditions")
     private static int calculateParentsPopulationSize() {
-        return (DEFAULT_POPULATION_SIZE % 2 == 0)
-                ? DEFAULT_POPULATION_SIZE * PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS / 100
-                : (DEFAULT_POPULATION_SIZE + 1) * PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS / 100;
+        if (DEFAULT_POPULATION_SIZE % 2 == 0 && PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS % 2 == 0) {
+            return DEFAULT_POPULATION_SIZE * PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS / 100;
+        }
+
+        if (DEFAULT_POPULATION_SIZE % 2 == 0) {
+            return DEFAULT_POPULATION_SIZE * (PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS + 1) / 100;
+        }
+
+        return (DEFAULT_POPULATION_SIZE + 1) * PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS / 100;
     }
 
     public PopulationIndividual getGlobalBestIndividual() {
