@@ -16,7 +16,7 @@ import static org.apache.commons.math3.util.CombinatoricsUtils.binomialCoefficie
 
 public class Population {
 
-    private static final int DEFAULT_POPULATION_SIZE = 500;
+    private static final int DEFAULT_POPULATION_SIZE = 250;
     private static final int PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS = 75;
     private static final int PARENTS_POPULATION_SIZE = calculateParentsPopulationSize();
     private final Random random;
