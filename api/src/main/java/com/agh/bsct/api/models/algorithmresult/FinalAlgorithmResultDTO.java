@@ -7,12 +7,15 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Builder
-public class AlgorithmResultWithVisualizationDataDTO {
+public class FinalAlgorithmResultDTO {
 
     @NotNull
     private AlgorithmResultDTO algorithmResultDTO;
 
     @NotNull
     private VisualizationDataDTO visualizationDataDTO;
+
+    @NotNull
+    private AlgorithmResultInfoDTO algorithmResultInfoDTO;
 
 }

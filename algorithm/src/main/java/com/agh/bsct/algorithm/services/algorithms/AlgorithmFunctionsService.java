@@ -10,21 +10,52 @@ import java.util.Map;
 @Service
 public class AlgorithmFunctionsService {
 
-    public double calculateFunctionValue(ShortestPathsDistances shortestPathsDistances,
-                                         List<GraphNode> globalState) {
-        var distancesToClosestHospitalsSum = 0.0;
+    private static final double FITNESS_SCORE_ROUNDING_PRECISION = 0.001;
 
-        for (Map<Long, Double> currentNodeShortestPathsDistance : shortestPathsDistances.getDistances().values()) {
-            var distanceToClosestHospitals = Double.MAX_VALUE;
-            for (var currentGlobalStateNodeId : globalState) {
-                var distanceToHospital = currentNodeShortestPathsDistance.get(currentGlobalStateNodeId.getId());
-                if (distanceToClosestHospitals > distanceToHospital) {
-                    distanceToClosestHospitals = distanceToHospital;
-                }
-            }
-            distancesToClosestHospitalsSum += distanceToClosestHospitals;
+    public double calculateFunctionValue(ShortestPathsDistances shortestPathsDistances, List<GraphNode> globalState) {
+        var distancesToClosestHospitalsSum = 0.0;
+        var longestDistance = shortestPathsDistances.getLongestDistance();
+
+        for (Map<Long, Double> currentNodeShortestPathsDistances : shortestPathsDistances.getDistances().values()) {
+            distancesToClosestHospitalsSum +=
+                    getDistanceToClosestHospital(currentNodeShortestPathsDistances, globalState, longestDistance);
         }
 
         return distancesToClosestHospitalsSum;
+    }
+
+    public boolean isFunctionValueBetter(double candidateFunctionValue, double currentBestFunctionValue) {
+        return Math.abs(candidateFunctionValue - currentBestFunctionValue) > FITNESS_SCORE_ROUNDING_PRECISION
+                && candidateFunctionValue < currentBestFunctionValue;
+    }
+
+    private double getDistanceToClosestHospital(Map<Long, Double> currentNodeShortestPathsDistances,
+                                                List<GraphNode> globalState,
+                                                double longestDistance) {
+        var distanceToClosestHospital = Double.MAX_VALUE;
+
+        for (var currentGlobalState : globalState) {
+            var distanceToHospital = currentNodeShortestPathsDistances.get(currentGlobalState.getId());
+            var weightedDistanceToHospital = getWeightedDistanceToHospital(distanceToHospital,
+                    currentGlobalState.getWeight(), longestDistance);
+
+            if (weightedDistanceToHospital < distanceToClosestHospital) {
+                distanceToClosestHospital = weightedDistanceToHospital;
+            }
+        }
+
+        return distanceToClosestHospital;
+    }
+
+    private double getWeightedDistanceToHospital(double distanceToHospital, double weight, double longestDistance) {
+        if (isNodeOnTheEdgeOfTheCityOrNotConsidered(weight)) {
+            return longestDistance * 100;
+        }
+
+        return (distanceToHospital / longestDistance) / weight;
+    }
+
+    private boolean isNodeOnTheEdgeOfTheCityOrNotConsidered(double abs) {
+        return abs < 0;
     }
 }

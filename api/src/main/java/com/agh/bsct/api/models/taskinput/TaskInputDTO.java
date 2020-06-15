@@ -2,12 +2,14 @@ package com.agh.bsct.api.models.taskinput;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class TaskInputDTO {
 
@@ -19,6 +21,9 @@ public class TaskInputDTO {
 
     @Nullable
     private String algorithmType;
+
+    @NotNull
+    private NodesPrioritiesDTO nodesPriorities;
 
     public Optional<String> getAlgorithmType() {
         return Optional.ofNullable(algorithmType);

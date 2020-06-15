@@ -20,9 +20,9 @@ public class NodeDTO {
     private Colour nodeColour;
 
     @NotNull
-    private Integer weight;
+    private Double weight;
 
-    public NodeDTO(GeographicalNodeDTO geographicalNodeDTO, Integer weight) {
+    public NodeDTO(GeographicalNodeDTO geographicalNodeDTO, Double weight) {
         this.geographicalNodeDTO = geographicalNodeDTO;
         this.weight = weight;
     }

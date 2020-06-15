@@ -8,12 +8,12 @@ import java.util.Objects;
 public class GraphNode {
 
     private final long id;
-    private final int weight;
+    private final double weight;
     private GeographicalNodeDTO geographicalNodeDTO;
     private Colour nodeColour;
 
 
-    public GraphNode(Long id, Integer weight, GeographicalNodeDTO geographicalNodeDTO) {
+    public GraphNode(Long id, Double weight, GeographicalNodeDTO geographicalNodeDTO) {
         this.id = id;
         this.weight = weight;
         this.geographicalNodeDTO = geographicalNodeDTO;
@@ -27,6 +27,10 @@ public class GraphNode {
 
     public Long getId() {
         return id;
+    }
+
+    public double getWeight() {
+        return weight;
     }
 
     public Colour getNodeColour() {

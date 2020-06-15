@@ -26,6 +26,7 @@ public class AlgorithmTaskMapper {
                 .graphData(mapToGraphDataDTO(algorithmTask))
                 .calculatingShortestPathsProgress(algorithmTask.getCalculatingShortestPathsProgress())
                 .hospitals(mapToHospitals(algorithmTask))
+                .fitnessScore(algorithmTask.getFitnessScore())
                 .build();
     }
 

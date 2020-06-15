@@ -4,13 +4,18 @@ import lombok.Builder;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Getter
 @Builder
-public class VisualizationDataDTO {
+public class AlgorithmResultInfoDTO {
 
     @NotNull
-    List<StreetVisualizationDTO> edges;
+    private long numberOfNodes;
+
+    @NotNull
+    private long numberOfEdges;
+
+    @NotNull
+    private double fitnessScore;
 
 }

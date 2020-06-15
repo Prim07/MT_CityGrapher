@@ -1,4 +1,4 @@
-package com.agh.bsct.algorithm.algorithms.AAlgorithm;
+package com.agh.bsct.algorithm.algorithms.GAlgorithm;
 
 import com.agh.bsct.algorithm.services.graph.GraphNode;
 
@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class MutationService {
 
-    private static final int PERCENTAGE_PROBABILITY_OF_MUTATION = 10;
+    private static final int PERCENTAGE_PROBABILITY_OF_MUTATION = 3;
 
     private final ArrayList<GraphNode> allGraphNodes;
     private final Random random;

@@ -5,6 +5,7 @@ import com.agh.bsct.api.models.citydata.GeographicalNodeDTO;
 import com.agh.bsct.api.models.citydata.StreetDTO;
 import com.agh.bsct.datacollector.library.adapter.queryresult.OverpassQueryResult;
 import com.agh.bsct.datacollector.services.city.QueryForCityProvider;
+import com.agh.bsct.datacollector.services.city.WaysDataThresholdImportanceLevel;
 import com.agh.bsct.datacollector.services.database.DatabaseService;
 import com.agh.bsct.datacollector.services.interpreter.QueryInterpreterService;
 import com.agh.bsct.datacollector.services.result.filter.ResultFilterService;
@@ -15,16 +16,19 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.agh.bsct.datacollector.services.dummylogger.DummyLogger.printMessage;
+
 @Service
 public class CityDataService {
 
     private static final String NODE_TYPE = "node";
+    private static final Integer MAX_NUMBER_OF_WAYS = 4000;
 
-    private QueryForCityProvider queryForCityProvider;
-    private QueryInterpreterService queryInterpreterService;
-    private ResultFilterService resultFilterService;
-    private StreetsJoinerService streetsJoinerService;
-    private DatabaseService databaseService;
+    private final QueryForCityProvider queryForCityProvider;
+    private final QueryInterpreterService queryInterpreterService;
+    private final ResultFilterService resultFilterService;
+    private final StreetsJoinerService streetsJoinerService;
+    private final DatabaseService databaseService;
 
     @Autowired
     public CityDataService(QueryForCityProvider queryForCityProvider,
@@ -48,7 +52,10 @@ public class CityDataService {
     }
 
     private CityDataDTO createCityData(String cityName) {
-        String query = queryForCityProvider.getQueryForCity(cityName);
+        printMessage(cityName + ": start finding importance level");
+        var importanceLevel = getImportanceLevelOfWaysInsideCity(cityName);
+        printMessage(cityName + ": found importance level: " + importanceLevel + ". Starting collecting data");
+        String query = queryForCityProvider.getQueryForCity(cityName, importanceLevel);
         OverpassQueryResult interpretedQuery = queryInterpreterService.interpret(query);
         OverpassQueryResult removedAreaTagsQueryResult = resultFilterService.removeAreaTags(interpretedQuery);
         Set<StreetDTO> streets = streetsJoinerService.joinStreets(removedAreaTagsQueryResult);
@@ -57,6 +64,40 @@ public class CityDataService {
         databaseService.save(cityDataDTO, cityName);
 
         return cityDataDTO;
+    }
+
+    private WaysDataThresholdImportanceLevel getImportanceLevelOfWaysInsideCity(String cityName) {
+        int numberOfWaysWithLowLevelImportance = getNumberOfWays(cityName, WaysDataThresholdImportanceLevel.LOW);
+        if (numberOfWaysWithLowLevelImportance < MAX_NUMBER_OF_WAYS) {
+            return WaysDataThresholdImportanceLevel.LOW;
+        }
+
+        int numberOfWaysWithMediumLevelImportance = getNumberOfWays(cityName, WaysDataThresholdImportanceLevel.MEDIUM);
+        if (numberOfWaysWithMediumLevelImportance < MAX_NUMBER_OF_WAYS) {
+            return WaysDataThresholdImportanceLevel.MEDIUM;
+        }
+
+        int numberOfWaysWithHighLevelImportance = getNumberOfWays(cityName, WaysDataThresholdImportanceLevel.HIGH);
+        if (numberOfWaysWithHighLevelImportance < MAX_NUMBER_OF_WAYS) {
+            return WaysDataThresholdImportanceLevel.HIGH;
+        }
+
+        return WaysDataThresholdImportanceLevel.VERY_HIGH;
+    }
+
+    private int getNumberOfWays(String cityName, WaysDataThresholdImportanceLevel importanceLevel) {
+        var queryForCityCount = queryForCityProvider.getQueryForCityCount(cityName, importanceLevel);
+        var result = queryInterpreterService.interpret(queryForCityCount);
+        var elements = result.getElements();
+
+        if (elements == null) {
+            printMessage(cityName + ": null elements for level: " + importanceLevel);
+            return Integer.MAX_VALUE;
+        }
+
+        int numberOfWays = Integer.parseInt(elements.get(0).getTags().getWays());
+        printMessage(cityName + ": " + numberOfWays + " ways for level: " + importanceLevel);
+        return numberOfWays;
     }
 
     private CityDataDTO updateCrossings(Set<StreetDTO> streets, OverpassQueryResult overpassQueryResult) {

@@ -3,6 +3,7 @@ package com.agh.bsct.algorithm.services.graph;
 import com.agh.bsct.algorithm.services.database.DatabaseService;
 import com.agh.bsct.algorithm.services.graphdata.GraphDataService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
+import com.agh.bsct.api.models.graphdata.GraphDataDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,14 +11,34 @@ import java.util.*;
 
 @Service
 public class GraphService {
-
     private final GraphDataService graphDataService;
+
     private final DatabaseService databaseService;
 
     @Autowired
     public GraphService(GraphDataService graphDataService, DatabaseService databaseService) {
         this.graphDataService = graphDataService;
         this.databaseService = databaseService;
+    }
+
+    public ShortestPathsDistances getShortestPathsDistances(AlgorithmTask algorithmTask) {
+        replaceGraphWithItsLargestConnectedComponent(algorithmTask.getGraph(), algorithmTask.getGraphDataDTO());
+        return calculateShortestPathsDistances(algorithmTask);
+    }
+
+    public void replaceGraphWithItsLargestConnectedComponent(Graph graph, GraphDataDTO graphDataDTO) {
+        var nodeToEdgesIncidenceMap = graph.getIncidenceMap();
+
+        var graphNodesFromConnectedComponent = findLargestConnectedComponent(nodeToEdgesIncidenceMap);
+
+        var nodeToEdgesIncidenceMapCopy = new HashMap<GraphNode, List<GraphEdge>>();
+
+        removeNodesNotIncludedInLCC(nodeToEdgesIncidenceMap, graphNodesFromConnectedComponent,
+                nodeToEdgesIncidenceMapCopy);
+
+        graph.setNodeToEdgesIncidenceMap(nodeToEdgesIncidenceMapCopy);
+
+        graphDataService.replaceGraphWithItsLargestConnectedComponent(graphDataDTO, graphNodesFromConnectedComponent);
     }
 
     void replaceGraphWithItsLargestConnectedComponent(Graph graph) {
@@ -31,23 +52,6 @@ public class GraphService {
                 nodeToEdgesIncidenceMapCopy);
 
         graph.setNodeToEdgesIncidenceMap(nodeToEdgesIncidenceMapCopy);
-    }
-
-    private void replaceGraphWithItsLargestConnectedComponent(AlgorithmTask algorithmTask) {
-        var graph = algorithmTask.getGraph();
-        var nodeToEdgesIncidenceMap = graph.getIncidenceMap();
-
-        var graphNodesFromConnectedComponent = findLargestConnectedComponent(nodeToEdgesIncidenceMap);
-
-        var nodeToEdgesIncidenceMapCopy = new HashMap<GraphNode, List<GraphEdge>>();
-
-        removeNodesNotIncludedInLCC(nodeToEdgesIncidenceMap, graphNodesFromConnectedComponent,
-                nodeToEdgesIncidenceMapCopy);
-
-        graph.setNodeToEdgesIncidenceMap(nodeToEdgesIncidenceMapCopy);
-
-        var graphDataDTO = algorithmTask.getGraphDataDTO();
-        graphDataService.replaceGraphWithItsLargestConnectedComponent(graphDataDTO, graphNodesFromConnectedComponent);
     }
 
     private void removeNodesNotIncludedInLCC(Map<GraphNode, List<GraphEdge>> nodeToEdgesIncidenceMap,
@@ -174,11 +178,6 @@ public class GraphService {
 
     private int getPercentageValue(int kLoopIteration, double graphNodesSize) {
         return (int) (kLoopIteration / graphNodesSize * 100);
-    }
-
-    public ShortestPathsDistances getShortestPathsDistances(AlgorithmTask algorithmTask) {
-        replaceGraphWithItsLargestConnectedComponent(algorithmTask);
-        return calculateShortestPathsDistances(algorithmTask);
     }
 
     private void putValueToMap(GraphNode i,

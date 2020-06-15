@@ -1,12 +1,14 @@
 package com.agh.bsct.algorithm.controllers;
 
 import com.agh.bsct.algorithm.controllers.mapper.AlgorithmTaskMapper;
+import com.agh.bsct.algorithm.services.lcc.LargestConnectedComponentService;
 import com.agh.bsct.algorithm.services.runner.AlgorithmRunnerService;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmCalculationStatus;
 import com.agh.bsct.algorithm.services.runner.algorithmtask.AlgorithmTask;
 import com.agh.bsct.api.models.algorithmcreated.AlgorithmTaskIdDTO;
 import com.agh.bsct.api.models.algorithmorder.AlgorithmOrderDTO;
 import com.agh.bsct.api.models.algorithmresult.AlgorithmResultDTO;
+import com.agh.bsct.api.models.graphdata.GraphDataDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.cache.CacheLoader;
@@ -23,18 +25,22 @@ import java.util.concurrent.ExecutionException;
 public class AlgorithmController {
 
     private static final String ALGORITHM_PATH = "algorithm/";
-    private static final String ALGORITHM_TEMP_RESULT_PATH = ALGORITHM_PATH + "temp/";
     private static final String TASK_ID_URI_PARAM = "{taskId}";
+    public static final String LARGEST_CONNECTED_COMPONENT_PATH = ALGORITHM_PATH + "lcc/";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private AlgorithmRunnerService algorithmRunnerService;
-    private AlgorithmTaskMapper algorithmTaskMapper;
+    private final AlgorithmRunnerService algorithmRunnerService;
+    private final AlgorithmTaskMapper algorithmTaskMapper;
+    private final LargestConnectedComponentService largestConnectedComponentService;
 
     @Autowired
-    public AlgorithmController(AlgorithmRunnerService algorithmRunnerService, AlgorithmTaskMapper algorithmTaskMapper) {
+    public AlgorithmController(AlgorithmRunnerService algorithmRunnerService,
+                               AlgorithmTaskMapper algorithmTaskMapper,
+                               LargestConnectedComponentService largestConnectedComponentService) {
         this.algorithmRunnerService = algorithmRunnerService;
         this.algorithmTaskMapper = algorithmTaskMapper;
+        this.largestConnectedComponentService = largestConnectedComponentService;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = ALGORITHM_PATH + TASK_ID_URI_PARAM)
@@ -44,20 +50,6 @@ public class AlgorithmController {
             return (task.getStatus() == AlgorithmCalculationStatus.SUCCESS)
                     ? getSuccessfulResponseWithAlgorithmTask(task)
                     : getAcceptedResponseWithAlgorithmTask(task);
-        } catch (CacheLoader.InvalidCacheLoadException e) {
-            e.printStackTrace();
-            return getNotFoundResponse(e, taskId);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            return getFailureResponseWithAlgorithmResultDTO(e, taskId);
-        }
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = ALGORITHM_TEMP_RESULT_PATH + TASK_ID_URI_PARAM)
-    public ResponseEntity<AlgorithmResultDTO> getTempResults(@PathVariable String taskId) {
-        try {
-            AlgorithmTask task = algorithmRunnerService.get(taskId);
-            return getSuccessfulResponseWithAlgorithmTask(task);
         } catch (CacheLoader.InvalidCacheLoadException e) {
             e.printStackTrace();
             return getNotFoundResponse(e, taskId);
@@ -83,6 +75,13 @@ public class AlgorithmController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = LARGEST_CONNECTED_COMPONENT_PATH)
+    @ResponseBody
+    public ResponseEntity<GraphDataDTO> createLargestConnectedComponent(@RequestBody GraphDataDTO graphDataDTO) {
+        largestConnectedComponentService.replaceWithLargestConnectedComponent(graphDataDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(graphDataDTO);
     }
 
     @GetMapping(ALGORITHM_PATH + "test")

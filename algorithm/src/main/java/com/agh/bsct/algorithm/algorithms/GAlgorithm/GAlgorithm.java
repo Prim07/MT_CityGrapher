@@ -1,4 +1,4 @@
-package com.agh.bsct.algorithm.algorithms.AAlgorithm;
+package com.agh.bsct.algorithm.algorithms.GAlgorithm;
 
 import com.agh.bsct.algorithm.algorithms.IAlgorithm;
 import com.agh.bsct.algorithm.services.algorithms.LatestChangesService;
@@ -15,8 +15,8 @@ import static com.agh.bsct.algorithm.algorithms.dummylogger.DummyLogger.printMes
 
 @Component
 @Scope("prototype")
-@Qualifier(GAAlgorithm.GENETIC_QUALIFIER)
-public class GAAlgorithm implements IAlgorithm {
+@Qualifier(GAlgorithm.GENETIC_QUALIFIER)
+public class GAlgorithm implements IAlgorithm {
 
     public static final String GENETIC_QUALIFIER = "geneticAlgorithm";
 
@@ -26,7 +26,7 @@ public class GAAlgorithm implements IAlgorithm {
     private final ColoursService coloursService;
 
     @Autowired
-    public GAAlgorithm(GraphService graphService, ColoursService coloursService) {
+    public GAlgorithm(GraphService graphService, ColoursService coloursService) {
         this.graphService = graphService;
         this.coloursService = coloursService;
     }
@@ -55,7 +55,9 @@ public class GAAlgorithm implements IAlgorithm {
 
             latestChangesService.add(wasUpdated);
             if (wasUpdated) {
-                algorithmTask.setHospitals(population.getGlobalBestIndividual().getIndividualNodes());
+                PopulationIndividual globalBestIndividual = population.getGlobalBestIndividual();
+                algorithmTask.setHospitals(globalBestIndividual.getIndividualNodes());
+                algorithmTask.setFitnessScore(globalBestIndividual.getFitnessScore());
             }
 
             epochNumber++;
@@ -69,6 +71,7 @@ public class GAAlgorithm implements IAlgorithm {
         printMessage("GA Best state value: " + globalBestIndividual.getFitnessScore()
                 + " after " + epochNumber + " epochs");
         algorithmTask.setHospitals(globalBestIndividual.getIndividualNodes());
+        algorithmTask.setFitnessScore(globalBestIndividual.getFitnessScore());
         coloursService.updateColoursInNodes(algorithmTask, shortestPathsDistances);
         algorithmTask.setStatus(AlgorithmCalculationStatus.SUCCESS);
     }

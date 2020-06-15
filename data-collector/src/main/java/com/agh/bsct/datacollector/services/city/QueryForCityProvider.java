@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class QueryForCityProvider {
 
-    public String getQueryForCity(String cityName) {
-        String wayTypes = getWayTypesForEveryCity();
+    public static final String TAGS_IN_QUERY_SEPARATOR = "|";
+
+    public String getQueryForCity(String cityName, WaysDataThresholdImportanceLevel importanceLevel) {
+        String wayTypes = getWayTypes(importanceLevel);
 
         return new OverpassQuery()
                 .format(OutputFormat.JSON)
@@ -26,21 +28,22 @@ public class QueryForCityProvider {
                 .build();
     }
 
-    private String getWayTypesForEveryCity() {
-        return new StringBuilder()
-                .append("motorway").append("|")
-                .append("trunk").append("|")
-                .append("primary").append("|")
-                .append("secondary").append("|")
-                .append("tertiary").append("|")
-                .append("motorway_link").append("|")
-                .append("trunk_link").append("|")
-                .append("primary_link").append("|")
-                .append("secondary_link").append("|")
-                .append("unclassified").append("|")
-                .append("service").append("|")
-                .append("bus_guideway")
-                .toString();
+    public String getQueryForCityCount(String cityName, WaysDataThresholdImportanceLevel importanceLevel) {
+        String wayTypes = getWayTypes(importanceLevel);
+
+        return new OverpassQuery()
+                .format(OutputFormat.JSON)
+                .filterQuery()
+                .area().tag("name", cityName)
+                .prepareNext()
+                .way().tagLike("highway", wayTypes).forKey("area")
+                .end()
+                .output(OutputVerbosity.COUNT)
+                .build();
+    }
+
+    private String getWayTypes(WaysDataThresholdImportanceLevel importanceLevel) {
+        return String.join(TAGS_IN_QUERY_SEPARATOR, importanceLevel.getTags());
     }
 
 }

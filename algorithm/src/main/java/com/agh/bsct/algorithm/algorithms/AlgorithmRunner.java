@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.agh.bsct.algorithm.algorithms.AAlgorithm.GAAlgorithm.GENETIC_QUALIFIER;
 import static com.agh.bsct.algorithm.algorithms.BFAlgorithm.BRUTE_FORCE_QUALIFIER;
+import static com.agh.bsct.algorithm.algorithms.GAlgorithm.GAlgorithm.GENETIC_QUALIFIER;
 import static com.agh.bsct.algorithm.algorithms.SAAlgorithm.SIMULATED_ANNEALING_QUALIFIER;
 
 @Component

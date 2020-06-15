@@ -55,6 +55,9 @@ public class Tags {
     @SerializedName("operator")
     private String operator;
 
+    @SerializedName("ways")
+    private String ways;
+
     public String getArea() {
         return area;
     }
@@ -121,5 +124,9 @@ public class Tags {
 
     public String getOperator() {
         return operator;
+    }
+
+    public String getWays() {
+        return ways;
     }
 }

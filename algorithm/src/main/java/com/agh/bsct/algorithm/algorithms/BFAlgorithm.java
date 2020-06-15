@@ -83,10 +83,11 @@ public class BFAlgorithm implements IAlgorithm {
             List<GraphNode> acceptedState = Collections.singletonList(node);
             var acceptedFunctionValue = algorithmFunctionsService.calculateFunctionValue(
                     shortestPathsDistances, acceptedState);
-            if (acceptedFunctionValue < bestFunctionValue) {
+            if (algorithmFunctionsService.isFunctionValueBetter(acceptedFunctionValue, bestFunctionValue)) {
                 bestFunctionValue = acceptedFunctionValue;
                 bestState = acceptedState;
                 updateHospitalsInAlgorithmTask(algorithmTask, bestState);
+                updateFitnessScoreInAlgorithmTask(algorithmTask, bestFunctionValue);
             }
         }
 
@@ -104,10 +105,11 @@ public class BFAlgorithm implements IAlgorithm {
                 List<GraphNode> acceptedState = Arrays.asList(node1, node2);
                 var acceptedFunctionValue =
                         algorithmFunctionsService.calculateFunctionValue(shortestPathsDistances, acceptedState);
-                if (acceptedFunctionValue < bestFunctionValue) {
+                if (algorithmFunctionsService.isFunctionValueBetter(acceptedFunctionValue, bestFunctionValue)) {
                     bestFunctionValue = acceptedFunctionValue;
                     bestState = acceptedState;
                     updateHospitalsInAlgorithmTask(algorithmTask, bestState);
+                    updateFitnessScoreInAlgorithmTask(algorithmTask, bestFunctionValue);
                 }
             }
 
@@ -128,10 +130,11 @@ public class BFAlgorithm implements IAlgorithm {
                     List<GraphNode> acceptedState = Arrays.asList(node1, node2, node3);
                     var acceptedFunctionValue =
                             algorithmFunctionsService.calculateFunctionValue(shortestPathsDistances, acceptedState);
-                    if (acceptedFunctionValue < bestFunctionValue) {
+                    if (algorithmFunctionsService.isFunctionValueBetter(acceptedFunctionValue, bestFunctionValue)) {
                         bestFunctionValue = acceptedFunctionValue;
                         bestState = acceptedState;
                         updateHospitalsInAlgorithmTask(algorithmTask, bestState);
+                        updateFitnessScoreInAlgorithmTask(algorithmTask, bestFunctionValue);
                     }
                 }
 
@@ -143,6 +146,10 @@ public class BFAlgorithm implements IAlgorithm {
 
     private void updateHospitalsInAlgorithmTask(AlgorithmTask algorithmTask, List<GraphNode> bestState) {
         algorithmTask.setHospitals(bestState);
+    }
+
+    private void updateFitnessScoreInAlgorithmTask(AlgorithmTask algorithmTask, double fitnessScore) {
+        algorithmTask.setFitnessScore(fitnessScore);
     }
 
 }

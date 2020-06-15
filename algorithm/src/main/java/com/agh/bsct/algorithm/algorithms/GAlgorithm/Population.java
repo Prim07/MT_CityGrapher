@@ -1,4 +1,4 @@
-package com.agh.bsct.algorithm.algorithms.AAlgorithm;
+package com.agh.bsct.algorithm.algorithms.GAlgorithm;
 
 import com.agh.bsct.algorithm.services.algorithms.AlgorithmFunctionsService;
 import com.agh.bsct.algorithm.services.graph.GraphNode;
@@ -16,10 +16,9 @@ import static org.apache.commons.math3.util.CombinatoricsUtils.binomialCoefficie
 
 public class Population {
 
-    private static final int DEFAULT_POPULATION_SIZE = 100;
-    private static final int PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS = 50;
+    private static final int DEFAULT_POPULATION_SIZE = 500;
+    private static final int PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS = 75;
     private static final int PARENTS_POPULATION_SIZE = calculateParentsPopulationSize();
-    private static final double FITNESS_SCORE_ROUNDING_PRECISION = 0.001;
     private final Random random;
     private final AlgorithmFunctionsService algorithmFunctionsService;
     private final CrossoverService crossoverService;
@@ -46,9 +45,15 @@ public class Population {
 
     @SuppressWarnings("ConstantConditions")
     private static int calculateParentsPopulationSize() {
-        return (DEFAULT_POPULATION_SIZE % 2 == 0)
-                ? DEFAULT_POPULATION_SIZE * PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS / 100
-                : (DEFAULT_POPULATION_SIZE + 1) * PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS / 100;
+        if (DEFAULT_POPULATION_SIZE % 2 == 0 && PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS % 2 == 0) {
+            return DEFAULT_POPULATION_SIZE * PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS / 100;
+        }
+
+        if (DEFAULT_POPULATION_SIZE % 2 == 0) {
+            return DEFAULT_POPULATION_SIZE * (PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS + 1) / 100;
+        }
+
+        return (DEFAULT_POPULATION_SIZE + 1) * PERCENTAGE_OF_POPULATION_TO_BE_CHOSEN_AS_PARENTS / 100;
     }
 
     public PopulationIndividual getGlobalBestIndividual() {
@@ -115,8 +120,7 @@ public class Population {
         var candidateFitnessScore = currentBestIndividual.getFitnessScore();
         var bestFitnessScore = globalBestIndividual.getFitnessScore();
 
-        return Math.abs(candidateFitnessScore - bestFitnessScore) > FITNESS_SCORE_ROUNDING_PRECISION
-                && candidateFitnessScore < bestFitnessScore;
+        return algorithmFunctionsService.isFunctionValueBetter(candidateFitnessScore, bestFitnessScore);
     }
 
     public void chooseParentsPopulation() {
